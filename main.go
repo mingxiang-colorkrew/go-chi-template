@@ -1,9 +1,11 @@
 package main
 
 import (
-  "measure/config"
+	"measure/config"
 )
 
 func main() {
-  config.StartApp()
+	appEnv := config.GetAppEnv()
+	app := config.NewApp(appEnv)
+	app.Start()
 }
