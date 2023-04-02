@@ -1,5 +1,11 @@
 # Golang Playground App
 
+## Formatting
+
+```
+go fmt ./...
+```
+
 ## Testing
 
 ```bash
