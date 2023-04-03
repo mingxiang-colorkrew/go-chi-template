@@ -16,6 +16,12 @@ migrate create -ext sql -dir db/migrations {migration_name}
 jet -dsn="postgresql://postgres:postgres@localhost:5432/measure?sslmode=disable" -schema=public -path=./.gen
 ```
 
+## Autogenerate from OpenAPI Spec
+
+```bash
+go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
+```
+
 ## Tooling
 
 ```bash

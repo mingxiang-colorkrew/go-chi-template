@@ -1,0 +1,182 @@
+{
+  "openapi": "3.0.0",
+  "x-stoplight": {
+    "id": "3faunai8focxi"
+  },
+  "info": {
+    "title": "v1-3.0",
+    "version": "1.0",
+    "description": "Test API"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/"
+    }
+  ],
+  "paths": {
+    "/v1/tenant": {
+      "post": {
+        "summary": "",
+        "operationId": "post-tenant",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tenant": {
+                      "$ref": "#/components/schemas/Tenant",
+                      "x-stoplight": {
+                        "id": "7oesyzv61d1v8"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errorCode": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "ijzp33f6fwy28"
+                      }
+                    },
+                    "errorMessage": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "r5s8tghadx8ud"
+                      }
+                    },
+                    "data": {
+                      "type": "object",
+                      "x-stoplight": {
+                        "id": "gpwrprt9qo8ic"
+                      },
+                      "properties": {
+                        "name": {
+                          "type": "array",
+                          "x-stoplight": {
+                            "id": "dtx34sschawhn"
+                          },
+                          "nullable": true,
+                          "items": {}
+                        },
+                        "shortCode": {
+                          "type": "array",
+                          "x-stoplight": {
+                            "id": "ywxr4z58zwnd7"
+                          },
+                          "nullable": true,
+                          "items": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Creates a new tenant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "mugcmm4a4syni"
+                    }
+                  },
+                  "shortCode": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "h3q5yhforhdes"
+                    },
+                    "minLength": 4,
+                    "maxLength": 5
+                  }
+                },
+                "required": [
+                  "name",
+                  "shortCode"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "parameters": []
+    }
+  },
+  "components": {
+    "schemas": {
+      "Tenant": {
+        "title": "Tenant",
+        "x-stoplight": {
+          "id": "i99mdazp9qa25"
+        },
+        "type": "object",
+        "x-examples": {
+          "Tenant A": {
+            "id": "123",
+            "name": "Tenant A",
+            "shortCode": "ck01",
+            "createdAt": "2019-08-24T14:15:22Z",
+            "updatedAt": "2019-08-24T14:15:22Z"
+          }
+        },
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "vx3vwx11f570d"
+            }
+          },
+          "shortCode": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "ygqt9q05oe3qp"
+            },
+            "minLength": 4,
+            "maxLength": 5
+          },
+          "createdAt": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "0p80arujaiwa9"
+            },
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "qonxuo2sxut2l"
+            },
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "shortCode"
+        ]
+      }
+    },
+    "securitySchemes": {}
+  }
+}
