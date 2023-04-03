@@ -1,3 +1,3 @@
-DROP TABLE user;
+DROP TABLE "user";
 
-DROP TABLE tenant;
+DROP TABLE "tenant";

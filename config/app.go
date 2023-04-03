@@ -2,10 +2,11 @@ package config
 
 import (
 	"database/sql"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"log"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type App struct {
@@ -46,7 +47,10 @@ func (app *App) Start() {
 
 func NewApp(appEnv AppEnv) *App {
 	app := App{}
+
 	app.setupEnv(appEnv)
+	app.setupDb()
 	app.setupRouter()
+
 	return &app
 }

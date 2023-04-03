@@ -3,20 +3,24 @@ CREATE TABLE "user" (
   "name" text,
   "email" text NOT NULL,
   "role" int NOT NULL,
-  "tenant_id" bigint NOT NULL
+  "tenant_id" bigint NOT NULL,
+  "created_at" timestamp NOT NULL,
+  "updated_at" timestamp NOT NULL
 );
 
 CREATE TABLE "tenant" (
   "id" bigserial PRIMARY KEY,
   "name" text NOT NULL,
-  "short_code" text NOT NULL
+  "short_code" text NOT NULL,
+  "created_at" timestamp NOT NULL,
+  "updated_at" timestamp NOT NULL
 );
 
-CREATE UNIQUE INDEX user_email_tenant_id_unique ON "user" ("email", "tenant_id");
+CREATE UNIQUE INDEX ON "user" ("email", "tenant_id");
 
-CREATE INDEX user_role ON "user" ("role");
+CREATE INDEX ON "user" ("role");
 
-CREATE UNIQUE INDEX user_tenant_short_code_unique ON "tenant" ("short_code");
+CREATE UNIQUE INDEX ON "tenant" ("short_code");
 
 ALTER TABLE "user" ADD FOREIGN KEY ("tenant_id") REFERENCES "tenant" ("id");
 

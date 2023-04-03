@@ -10,10 +10,17 @@ migrate -source file://db/migrations/ -database "postgres://postgres:postgres@lo
 migrate create -ext sql -dir db/migrations {migration_name}
 ```
 
+## Autogenerate SQL Models
+
+```bash
+jet -dsn="postgresql://postgres:postgres@localhost:5432/measure?sslmode=disable" -schema=public -path=./.gen
+```
+
 ## Tooling
 
 ```bash
 brew install golang-migrate
+go install github.com/go-jet/jet/v2/cmd/jet@latest
 ```
 
 ## Formatting

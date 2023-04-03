@@ -19,8 +19,9 @@ const (
 )
 
 type EnvProvider struct {
-	appEnv     string
-	serverPort string
+	appEnv      string
+	serverPort  string
+	databaseUrl string
 }
 
 func (e *EnvProvider) AppEnv() string {
@@ -94,9 +95,12 @@ func NewEnvProvider(appEnv AppEnv) *EnvProvider {
 		serverPort = "3000"
 	}
 
+	databaseUrl, exists := envVars["DATABASE_URL"]
+
 	envProvider := EnvProvider{
-		appEnv:     appServer,
-		serverPort: serverPort,
+		appEnv:      appServer,
+		serverPort:  serverPort,
+		databaseUrl: databaseUrl,
 	}
 
 	return &envProvider
