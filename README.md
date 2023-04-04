@@ -8,18 +8,19 @@ migrate -source file://db/migrations/ -database "postgres://postgres:postgres@lo
 
 # create new migration
 migrate create -ext sql -dir db/migrations {migration_name}
-github.com/golang-migrate/migrate/v4
 ```
 
 ## Autogenerate SQL Models
 
 ```bash
 jet -dsn="postgresql://postgres:postgres@localhost:5432/measure?sslmode=disable" -schema=public -path=./.gen
+cp -r .gen/measure/public db/public
 ```
 
 ## Autogenerate from OpenAPI Spec
 
 ```bash
+oapi-codegen -config oapi/codegen.yaml oapi/measure-openapi.json
 ```
 
 ## Tooling
