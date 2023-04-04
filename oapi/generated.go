@@ -203,8 +203,8 @@ func (response PostTenant200JSONResponse) VisitPostTenantResponse(w http.Respons
 
 type PostTenant400JSONResponse struct {
 	Data *struct {
-		Name      *[]interface{} `json:"name"`
-		ShortCode *[]interface{} `json:"shortCode"`
+		Name      *[]string `json:"name"`
+		ShortCode *[]string `json:"shortCode"`
 	} `json:"data,omitempty"`
 	ErrorCode    *string `json:"errorCode,omitempty"`
 	ErrorMessage *string `json:"errorMessage,omitempty"`

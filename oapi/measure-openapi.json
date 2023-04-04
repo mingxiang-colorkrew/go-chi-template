@@ -68,7 +68,12 @@
                             "id": "dtx34sschawhn"
                           },
                           "nullable": true,
-                          "items": {}
+                          "items": {
+                            "x-stoplight": {
+                              "id": "hom8l0gi2gh7o"
+                            },
+                            "type": "string"
+                          }
                         },
                         "shortCode": {
                           "type": "array",
@@ -76,7 +81,12 @@
                             "id": "ywxr4z58zwnd7"
                           },
                           "nullable": true,
-                          "items": {}
+                          "items": {
+                            "x-stoplight": {
+                              "id": "4d3j2r209pb80"
+                            },
+                            "type": "string"
+                          }
                         }
                       }
                     }
