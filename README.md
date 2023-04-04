@@ -8,6 +8,7 @@ migrate -source file://db/migrations/ -database "postgres://postgres:postgres@lo
 
 # create new migration
 migrate create -ext sql -dir db/migrations {migration_name}
+github.com/golang-migrate/migrate/v4
 ```
 
 ## Autogenerate SQL Models
@@ -19,7 +20,6 @@ jet -dsn="postgresql://postgres:postgres@localhost:5432/measure?sslmode=disable"
 ## Autogenerate from OpenAPI Spec
 
 ```bash
-go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 ```
 
 ## Tooling
@@ -27,6 +27,7 @@ go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 ```bash
 brew install golang-migrate
 go install github.com/go-jet/jet/v2/cmd/jet@latest
+go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 ```
 
 ## Formatting
@@ -41,7 +42,7 @@ go fmt ./...
 go test -v ./test/...
 ```
 
-## VSCode
+## VSCode DEbugging
 ```bash
 go install golang.org/x/tools/gopls@latest
 go install -v github.com/go-delve/delve/cmd/dlv@latest

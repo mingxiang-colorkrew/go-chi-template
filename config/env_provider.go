@@ -32,10 +32,7 @@ func (e *EnvProvider) ServerPort() string {
 	return e.serverPort
 }
 
-func readEnv(env AppEnv) map[string]string {
-	basepath, _ := os.Getwd()
-	// basepath := filepath.Base(b)
-
+func readEnv(rootDir string, env AppEnv) map[string]string {
 	var envFileName string
 
 	switch env {
@@ -47,7 +44,7 @@ func readEnv(env AppEnv) map[string]string {
 		return map[string]string{}
 	}
 
-	envFilePath := filepath.Join(basepath, envFileName)
+	envFilePath := filepath.Join(rootDir, envFileName)
 
 	envVars, error := godotenv.Read(envFilePath)
 
@@ -82,8 +79,8 @@ func GetAppEnv() AppEnv {
 	return AppEnvLocal
 }
 
-func NewEnvProvider(appEnv AppEnv) *EnvProvider {
-	envVars := readEnv(appEnv)
+func NewEnvProvider(rootDir string, appEnv AppEnv) *EnvProvider {
+	envVars := readEnv(rootDir, appEnv)
 
 	appServer, exists := envVars["APP_ENV"]
 	if exists == false {

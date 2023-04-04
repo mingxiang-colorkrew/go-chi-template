@@ -6,6 +6,8 @@ import (
 	"log"
 	"measure/oapi"
 	"net/http"
+	"path"
+	"runtime"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -16,6 +18,7 @@ type App struct {
 	envVars *EnvProvider
 	db      *sql.DB
 	router  *chi.Mux
+	rootDir string
 }
 
 func (app *App) Env() AppEnv {
@@ -32,14 +35,17 @@ func (app *App) DB() *sql.DB {
 
 func (app *App) setupEnv(appEnv AppEnv) {
 	app.env = appEnv
-	app.envVars = NewEnvProvider(app.env)
+	_, b, _, _ := runtime.Caller(0)
+	// should be the root directory
+	app.rootDir = path.Join(path.Dir(b), "..")
+	app.envVars = NewEnvProvider(app.rootDir, app.env)
 }
 
 func (app *App) SetupRouter(handler oapi.StrictServerInterface) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-  baseUrl := "/api"
+	baseUrl := "/api"
 	strictHandler := oapi.NewStrictHandler(handler, []oapi.StrictMiddlewareFunc{})
 	oapi.HandlerFromMuxWithBaseURL(strictHandler, r, baseUrl)
 
