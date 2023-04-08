@@ -2,8 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"measure/db/public/model"
-	"measure/db/public/table"
+	"measure/db/measure/public/model"
+	"measure/db/measure/public/table"
 
 	. "github.com/go-jet/jet/v2/postgres"
 )

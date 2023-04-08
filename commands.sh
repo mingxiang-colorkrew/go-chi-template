@@ -19,7 +19,11 @@ case "$1" in
     set +o allexport
     ;;
   "--env=production")
-    echo 'Using prodution ENV'
+    echo 'Using production ENV'
+    ;;
+  "help")
+    cli_help
+    exit 0
     ;;
   *)
     echo 'Please provide an env with `./commands.sh --env={env} {command}`'
@@ -33,6 +37,9 @@ case "$2" in
     migrate -source file://db/migrations/ -database "$DATABASE_URL" up
     echo 'Autogenerating DB models';
     jet -dsn="$DATABASE_URL" -schema=public -path=./db
+    # remove reference to migrations table since these should never be interacted with
+    rm db/*/*/model/schema_migrations.go
+    rm db/*/*/table/schema_migrations.go
     echo 'Finished running migrations';
     ;;
   "migration:create")

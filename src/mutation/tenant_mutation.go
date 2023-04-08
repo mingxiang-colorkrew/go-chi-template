@@ -2,8 +2,8 @@ package mutation
 
 import (
 	"measure/config"
-	"measure/db/public/model"
-	"measure/db/public/table"
+	"measure/db/measure/public/model"
+	"measure/db/measure/public/table"
 )
 
 func InsertTenant(app *config.App, tenant *model.Tenant) (*model.Tenant, error) {

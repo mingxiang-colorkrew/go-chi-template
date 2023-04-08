@@ -1,7 +1,7 @@
 package domainservice
 
 import (
-	"measure/db/public/model"
+	"measure/db/measure/public/model"
 	"time"
 )
 

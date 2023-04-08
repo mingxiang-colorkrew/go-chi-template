@@ -1,8 +1,13 @@
 # Golang Playground App
 
-## Autogenerate from OpenAPI Spec
+## Commands
 
 ```bash
+# initialize DB
+./init.sh
+
+# run other commands
+./commands.sh --help
 ```
 
 ## Tooling
