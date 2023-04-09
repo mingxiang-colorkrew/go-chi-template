@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "x-stoplight": {
-    "id": "3faunai8focxi"
+    "id": "pery83chv9cf7"
   },
   "info": {
     "title": "v1-3.0",
@@ -10,14 +10,14 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/api/"
+      "url": "http://localhost:3000"
     }
   ],
   "paths": {
-    "/v1/tenant": {
+    "/api/v1/tenant": {
       "post": {
         "summary": "",
-        "operationId": "post-tenant",
+        "operationId": "post-api-v1-tenant",
         "responses": {
           "200": {
             "description": "OK",
@@ -32,7 +32,10 @@
                         "id": "7oesyzv61d1v8"
                       }
                     }
-                  }
+                  },
+                  "required": [
+                    "tenant"
+                  ]
                 }
               }
             }
@@ -127,7 +130,276 @@
           }
         }
       },
-      "parameters": []
+      "parameters": [],
+      "get": {
+        "summary": "",
+        "operationId": "get-api-v1-tenant",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tenants": {
+                      "type": "array",
+                      "x-stoplight": {
+                        "id": "i39zf3rqasrgp"
+                      },
+                      "items": {
+                        "$ref": "#/components/schemas/Tenant",
+                        "x-stoplight": {
+                          "id": "rcffzqyktj1xs"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "tenants"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "List all tenants in the application"
+      }
+    },
+    "/api/v1/tenant/{tenantId}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "tenantId",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tenant": {
+                      "$ref": "#/components/schemas/Tenant",
+                      "x-stoplight": {
+                        "id": "j2gtmj95jn94m"
+                      }
+                    }
+                  },
+                  "required": [
+                    "tenant"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-api-v1-tenant-tenantId",
+        "description": "Get details for 1 tenant"
+      }
+    },
+    "/api/v1/user": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "array",
+                      "x-stoplight": {
+                        "id": "w2z37fjmmrmky"
+                      },
+                      "items": {
+                        "$ref": "#/components/schemas/User",
+                        "x-stoplight": {
+                          "id": "63zq98s5tl8ec"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "users"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-api-v1-user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tenantId": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "j21273dhjc1dn"
+                    }
+                  }
+                },
+                "required": [
+                  "tenantId"
+                ]
+              }
+            }
+          }
+        },
+        "description": "List all users for a tenant"
+      },
+      "post": {
+        "summary": "",
+        "operationId": "post-api-v1-user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User",
+                      "x-stoplight": {
+                        "id": "5xvn8ptnrri9k"
+                      }
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "object",
+                      "x-stoplight": {
+                        "id": "z5ffbwtgz1ccc"
+                      },
+                      "properties": {
+                        "name": {
+                          "type": "array",
+                          "x-stoplight": {
+                            "id": "iprlizcinawyw"
+                          },
+                          "items": {
+                            "x-stoplight": {
+                              "id": "gh9sp7k213kmn"
+                            },
+                            "type": "string"
+                          }
+                        },
+                        "email": {
+                          "type": "array",
+                          "x-stoplight": {
+                            "id": "fzw5vm67gjprm"
+                          },
+                          "items": {
+                            "x-stoplight": {
+                              "id": "izmt148dhif38"
+                            },
+                            "type": "string"
+                          }
+                        },
+                        "role": {
+                          "type": "array",
+                          "x-stoplight": {
+                            "id": "v8u4iuvn9e78r"
+                          },
+                          "items": {
+                            "x-stoplight": {
+                              "id": "xx4z36zs35g1j"
+                            },
+                            "type": "string"
+                          }
+                        },
+                        "tenantId": {
+                          "type": "array",
+                          "x-stoplight": {
+                            "id": "q7nzdhq54ffgy"
+                          },
+                          "items": {
+                            "x-stoplight": {
+                              "id": "4kfzvxbk255go"
+                            },
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "n9d4k0gb8l4z8"
+                    },
+                    "nullable": true
+                  },
+                  "email": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "4vx1aa49whr4h"
+                    }
+                  },
+                  "role": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "ncgaidb39ngmw"
+                    }
+                  },
+                  "tenantId": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "gcsyy69x1jcjo"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "role",
+                  "tenantId"
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -135,7 +407,7 @@
       "Tenant": {
         "title": "Tenant",
         "x-stoplight": {
-          "id": "i99mdazp9qa25"
+          "id": "qo44618hav2xb"
         },
         "type": "object",
         "x-examples": {
@@ -178,12 +450,90 @@
               "id": "qonxuo2sxut2l"
             },
             "format": "date-time"
+          },
+          "userCount": {
+            "type": "integer",
+            "x-stoplight": {
+              "id": "ugjq80yert5hn"
+            }
           }
         },
         "required": [
           "id",
           "name",
           "shortCode"
+        ]
+      },
+      "User": {
+        "title": "User",
+        "x-stoplight": {
+          "id": "bc6zu9os4752n"
+        },
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "luiz9dce771hr"
+            }
+          },
+          "email": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "4dlx4xbvnhwdy"
+            }
+          },
+          "role": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "emreyqg2s9pz1"
+            }
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/Tenant",
+            "x-stoplight": {
+              "id": "knjbv7dj1z7e1"
+            }
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "Review": {
+        "title": "Review",
+        "x-stoplight": {
+          "id": "8drc41xny4e1s"
+        },
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "0brphr0o4s43v"
+            }
+          },
+          "rating": {
+            "type": "integer",
+            "x-stoplight": {
+              "id": "b1okro5g3gldm"
+            }
+          },
+          "user": {
+            "$ref": "#/components/schemas/User",
+            "x-stoplight": {
+              "id": "iskxfgpwxb0pl"
+            }
+          }
+        },
+        "required": [
+          "id"
         ]
       }
     },

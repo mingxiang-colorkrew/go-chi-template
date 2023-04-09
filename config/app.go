@@ -45,7 +45,7 @@ func (app *App) SetupRouter(handler oapi.StrictServerInterface) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	baseUrl := "/api"
+	baseUrl := ""
 	strictHandler := oapi.NewStrictHandler(handler, []oapi.StrictMiddlewareFunc{})
 	oapi.HandlerFromMuxWithBaseURL(strictHandler, r, baseUrl)
 
@@ -66,10 +66,13 @@ func (app *App) Start() {
 }
 
 func (app *App) PrintRoutes() {
-	chi.Walk(app.router, func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
-		fmt.Printf("[%s]: '%s' has %d middlewares\n", method, route, len(middlewares))
-		return nil
-	})
+	chi.Walk(
+		app.router,
+		func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
+			fmt.Printf("[%s]: '%s' has %d middlewares\n", method, route, len(middlewares))
+			return nil
+		},
+	)
 }
 
 func NewApp(appEnv AppEnv) *App {

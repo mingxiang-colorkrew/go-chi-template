@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -24,16 +25,45 @@ type Tenant struct {
 	Name      string     `json:"name"`
 	ShortCode string     `json:"shortCode"`
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	UserCount *int       `json:"userCount,omitempty"`
 }
 
-// PostTenantJSONBody defines parameters for PostTenant.
-type PostTenantJSONBody struct {
+// User defines model for User.
+type User struct {
+	Email  *string `json:"email,omitempty"`
+	Id     string  `json:"id"`
+	Name   *string `json:"name,omitempty"`
+	Role   *string `json:"role,omitempty"`
+	Tenant *Tenant `json:"tenant,omitempty"`
+}
+
+// PostApiV1TenantJSONBody defines parameters for PostApiV1Tenant.
+type PostApiV1TenantJSONBody struct {
 	Name      string `json:"name"`
 	ShortCode string `json:"shortCode"`
 }
 
-// PostTenantJSONRequestBody defines body for PostTenant for application/json ContentType.
-type PostTenantJSONRequestBody PostTenantJSONBody
+// GetApiV1UserJSONBody defines parameters for GetApiV1User.
+type GetApiV1UserJSONBody struct {
+	TenantId string `json:"tenantId"`
+}
+
+// PostApiV1UserJSONBody defines parameters for PostApiV1User.
+type PostApiV1UserJSONBody struct {
+	Email    string  `json:"email"`
+	Name     *string `json:"name"`
+	Role     string  `json:"role"`
+	TenantId string  `json:"tenantId"`
+}
+
+// PostApiV1TenantJSONRequestBody defines body for PostApiV1Tenant for application/json ContentType.
+type PostApiV1TenantJSONRequestBody PostApiV1TenantJSONBody
+
+// GetApiV1UserJSONRequestBody defines body for GetApiV1User for application/json ContentType.
+type GetApiV1UserJSONRequestBody GetApiV1UserJSONBody
+
+// PostApiV1UserJSONRequestBody defines body for PostApiV1User for application/json ContentType.
+type PostApiV1UserJSONRequestBody PostApiV1UserJSONBody
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -108,14 +138,30 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// PostTenant request with any body
-	PostTenantWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetApiV1Tenant request
+	GetApiV1Tenant(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostTenant(ctx context.Context, body PostTenantJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostApiV1Tenant request with any body
+	PostApiV1TenantWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiV1Tenant(ctx context.Context, body PostApiV1TenantJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiV1TenantTenantId request
+	GetApiV1TenantTenantId(ctx context.Context, tenantId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiV1User request with any body
+	GetApiV1UserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	GetApiV1User(ctx context.Context, body GetApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiV1User request with any body
+	PostApiV1UserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	PostApiV1User(ctx context.Context, body PostApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-func (c *Client) PostTenantWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostTenantRequestWithBody(c.Server, contentType, body)
+func (c *Client) GetApiV1Tenant(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1TenantRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -126,8 +172,8 @@ func (c *Client) PostTenantWithBody(ctx context.Context, contentType string, bod
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostTenant(ctx context.Context, body PostTenantJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostTenantRequest(c.Server, body)
+func (c *Client) PostApiV1TenantWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiV1TenantRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -138,19 +184,80 @@ func (c *Client) PostTenant(ctx context.Context, body PostTenantJSONRequestBody,
 	return c.Client.Do(req)
 }
 
-// NewPostTenantRequest calls the generic PostTenant builder with application/json body
-func NewPostTenantRequest(server string, body PostTenantJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
+func (c *Client) PostApiV1Tenant(ctx context.Context, body PostApiV1TenantJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiV1TenantRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostTenantRequestWithBody(server, "application/json", bodyReader)
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
-// NewPostTenantRequestWithBody generates requests for PostTenant with any type of body
-func NewPostTenantRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func (c *Client) GetApiV1TenantTenantId(ctx context.Context, tenantId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1TenantTenantIdRequest(c.Server, tenantId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetApiV1UserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1UserRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetApiV1User(ctx context.Context, body GetApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1UserRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostApiV1UserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiV1UserRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostApiV1User(ctx context.Context, body PostApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiV1UserRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// NewGetApiV1TenantRequest generates requests for GetApiV1Tenant
+func NewGetApiV1TenantRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -158,7 +265,159 @@ func NewPostTenantRequestWithBody(server string, contentType string, body io.Rea
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/tenant")
+	operationPath := fmt.Sprintf("/api/v1/tenant")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiV1TenantRequest calls the generic PostApiV1Tenant builder with application/json body
+func NewPostApiV1TenantRequest(server string, body PostApiV1TenantJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiV1TenantRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiV1TenantRequestWithBody generates requests for PostApiV1Tenant with any type of body
+func NewPostApiV1TenantRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/tenant")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiV1TenantTenantIdRequest generates requests for GetApiV1TenantTenantId
+func NewGetApiV1TenantTenantIdRequest(server string, tenantId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "tenantId", runtime.ParamLocationPath, tenantId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/tenant/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetApiV1UserRequest calls the generic GetApiV1User builder with application/json body
+func NewGetApiV1UserRequest(server string, body GetApiV1UserJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewGetApiV1UserRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewGetApiV1UserRequestWithBody generates requests for GetApiV1User with any type of body
+func NewGetApiV1UserRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/user")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewPostApiV1UserRequest calls the generic PostApiV1User builder with application/json body
+func NewPostApiV1UserRequest(server string, body PostApiV1UserJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiV1UserRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostApiV1UserRequestWithBody generates requests for PostApiV1User with any type of body
+func NewPostApiV1UserRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/user")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -221,17 +480,57 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// PostTenant request with any body
-	PostTenantWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostTenantResponse, error)
+	// GetApiV1Tenant request
+	GetApiV1TenantWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1TenantResponse, error)
 
-	PostTenantWithResponse(ctx context.Context, body PostTenantJSONRequestBody, reqEditors ...RequestEditorFn) (*PostTenantResponse, error)
+	// PostApiV1Tenant request with any body
+	PostApiV1TenantWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiV1TenantResponse, error)
+
+	PostApiV1TenantWithResponse(ctx context.Context, body PostApiV1TenantJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiV1TenantResponse, error)
+
+	// GetApiV1TenantTenantId request
+	GetApiV1TenantTenantIdWithResponse(ctx context.Context, tenantId string, reqEditors ...RequestEditorFn) (*GetApiV1TenantTenantIdResponse, error)
+
+	// GetApiV1User request with any body
+	GetApiV1UserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetApiV1UserResponse, error)
+
+	GetApiV1UserWithResponse(ctx context.Context, body GetApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*GetApiV1UserResponse, error)
+
+	// PostApiV1User request with any body
+	PostApiV1UserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiV1UserResponse, error)
+
+	PostApiV1UserWithResponse(ctx context.Context, body PostApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiV1UserResponse, error)
 }
 
-type PostTenantResponse struct {
+type GetApiV1TenantResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		Tenant *Tenant `json:"tenant,omitempty"`
+		Tenants []Tenant `json:"tenants"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiV1TenantResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiV1TenantResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiV1TenantResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Tenant Tenant `json:"tenant"`
 	}
 	JSON400 *struct {
 		Data *struct {
@@ -244,7 +543,7 @@ type PostTenantResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r PostTenantResponse) Status() string {
+func (r PostApiV1TenantResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -252,39 +551,171 @@ func (r PostTenantResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostTenantResponse) StatusCode() int {
+func (r PostApiV1TenantResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
 }
 
-// PostTenantWithBodyWithResponse request with arbitrary body returning *PostTenantResponse
-func (c *ClientWithResponses) PostTenantWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostTenantResponse, error) {
-	rsp, err := c.PostTenantWithBody(ctx, contentType, body, reqEditors...)
+type GetApiV1TenantTenantIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Tenant Tenant `json:"tenant"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiV1TenantTenantIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiV1TenantTenantIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetApiV1UserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Users []User `json:"users"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiV1UserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiV1UserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostApiV1UserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		User User `json:"user"`
+	}
+	JSON400 *struct {
+		Errors *struct {
+			Email    *[]string `json:"email,omitempty"`
+			Name     *[]string `json:"name,omitempty"`
+			Role     *[]string `json:"role,omitempty"`
+			TenantId *[]string `json:"tenantId,omitempty"`
+		} `json:"errors,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiV1UserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiV1UserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// GetApiV1TenantWithResponse request returning *GetApiV1TenantResponse
+func (c *ClientWithResponses) GetApiV1TenantWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1TenantResponse, error) {
+	rsp, err := c.GetApiV1Tenant(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostTenantResponse(rsp)
+	return ParseGetApiV1TenantResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostTenantWithResponse(ctx context.Context, body PostTenantJSONRequestBody, reqEditors ...RequestEditorFn) (*PostTenantResponse, error) {
-	rsp, err := c.PostTenant(ctx, body, reqEditors...)
+// PostApiV1TenantWithBodyWithResponse request with arbitrary body returning *PostApiV1TenantResponse
+func (c *ClientWithResponses) PostApiV1TenantWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiV1TenantResponse, error) {
+	rsp, err := c.PostApiV1TenantWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostTenantResponse(rsp)
+	return ParsePostApiV1TenantResponse(rsp)
 }
 
-// ParsePostTenantResponse parses an HTTP response from a PostTenantWithResponse call
-func ParsePostTenantResponse(rsp *http.Response) (*PostTenantResponse, error) {
+func (c *ClientWithResponses) PostApiV1TenantWithResponse(ctx context.Context, body PostApiV1TenantJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiV1TenantResponse, error) {
+	rsp, err := c.PostApiV1Tenant(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiV1TenantResponse(rsp)
+}
+
+// GetApiV1TenantTenantIdWithResponse request returning *GetApiV1TenantTenantIdResponse
+func (c *ClientWithResponses) GetApiV1TenantTenantIdWithResponse(ctx context.Context, tenantId string, reqEditors ...RequestEditorFn) (*GetApiV1TenantTenantIdResponse, error) {
+	rsp, err := c.GetApiV1TenantTenantId(ctx, tenantId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiV1TenantTenantIdResponse(rsp)
+}
+
+// GetApiV1UserWithBodyWithResponse request with arbitrary body returning *GetApiV1UserResponse
+func (c *ClientWithResponses) GetApiV1UserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetApiV1UserResponse, error) {
+	rsp, err := c.GetApiV1UserWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiV1UserResponse(rsp)
+}
+
+func (c *ClientWithResponses) GetApiV1UserWithResponse(ctx context.Context, body GetApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*GetApiV1UserResponse, error) {
+	rsp, err := c.GetApiV1User(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiV1UserResponse(rsp)
+}
+
+// PostApiV1UserWithBodyWithResponse request with arbitrary body returning *PostApiV1UserResponse
+func (c *ClientWithResponses) PostApiV1UserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiV1UserResponse, error) {
+	rsp, err := c.PostApiV1UserWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiV1UserResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostApiV1UserWithResponse(ctx context.Context, body PostApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiV1UserResponse, error) {
+	rsp, err := c.PostApiV1User(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiV1UserResponse(rsp)
+}
+
+// ParseGetApiV1TenantResponse parses an HTTP response from a GetApiV1TenantWithResponse call
+func ParseGetApiV1TenantResponse(rsp *http.Response) (*GetApiV1TenantResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostTenantResponse{
+	response := &GetApiV1TenantResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -292,7 +723,35 @@ func ParsePostTenantResponse(rsp *http.Response) (*PostTenantResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Tenant *Tenant `json:"tenant,omitempty"`
+			Tenants []Tenant `json:"tenants"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiV1TenantResponse parses an HTTP response from a PostApiV1TenantWithResponse call
+func ParsePostApiV1TenantResponse(rsp *http.Response) (*PostApiV1TenantResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiV1TenantResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Tenant Tenant `json:"tenant"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -318,11 +777,121 @@ func ParsePostTenantResponse(rsp *http.Response) (*PostTenantResponse, error) {
 	return response, nil
 }
 
+// ParseGetApiV1TenantTenantIdResponse parses an HTTP response from a GetApiV1TenantTenantIdWithResponse call
+func ParseGetApiV1TenantTenantIdResponse(rsp *http.Response) (*GetApiV1TenantTenantIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiV1TenantTenantIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Tenant Tenant `json:"tenant"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiV1UserResponse parses an HTTP response from a GetApiV1UserWithResponse call
+func ParseGetApiV1UserResponse(rsp *http.Response) (*GetApiV1UserResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiV1UserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Users []User `json:"users"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostApiV1UserResponse parses an HTTP response from a PostApiV1UserWithResponse call
+func ParsePostApiV1UserResponse(rsp *http.Response) (*PostApiV1UserResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiV1UserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			User User `json:"user"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Errors *struct {
+				Email    *[]string `json:"email,omitempty"`
+				Name     *[]string `json:"name,omitempty"`
+				Role     *[]string `json:"role,omitempty"`
+				TenantId *[]string `json:"tenantId,omitempty"`
+			} `json:"errors,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
-	// (POST /v1/tenant)
-	PostTenant(w http.ResponseWriter, r *http.Request)
+	// (GET /api/v1/tenant)
+	GetApiV1Tenant(w http.ResponseWriter, r *http.Request)
+
+	// (POST /api/v1/tenant)
+	PostApiV1Tenant(w http.ResponseWriter, r *http.Request)
+	// Your GET endpoint
+	// (GET /api/v1/tenant/{tenantId})
+	GetApiV1TenantTenantId(w http.ResponseWriter, r *http.Request, tenantId string)
+	// Your GET endpoint
+	// (GET /api/v1/user)
+	GetApiV1User(w http.ResponseWriter, r *http.Request)
+
+	// (POST /api/v1/user)
+	PostApiV1User(w http.ResponseWriter, r *http.Request)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -334,12 +903,83 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// PostTenant operation middleware
-func (siw *ServerInterfaceWrapper) PostTenant(w http.ResponseWriter, r *http.Request) {
+// GetApiV1Tenant operation middleware
+func (siw *ServerInterfaceWrapper) GetApiV1Tenant(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostTenant(w, r)
+		siw.Handler.GetApiV1Tenant(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PostApiV1Tenant operation middleware
+func (siw *ServerInterfaceWrapper) PostApiV1Tenant(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostApiV1Tenant(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetApiV1TenantTenantId operation middleware
+func (siw *ServerInterfaceWrapper) GetApiV1TenantTenantId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "tenantId", runtime.ParamLocationPath, chi.URLParam(r, "tenantId"), &tenantId)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiV1TenantTenantId(w, r, tenantId)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetApiV1User operation middleware
+func (siw *ServerInterfaceWrapper) GetApiV1User(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiV1User(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// PostApiV1User operation middleware
+func (siw *ServerInterfaceWrapper) PostApiV1User(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostApiV1User(w, r)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -463,32 +1103,62 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/v1/tenant", wrapper.PostTenant)
+		r.Get(options.BaseURL+"/api/v1/tenant", wrapper.GetApiV1Tenant)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenant", wrapper.PostApiV1Tenant)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenant/{tenantId}", wrapper.GetApiV1TenantTenantId)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/user", wrapper.GetApiV1User)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/user", wrapper.PostApiV1User)
 	})
 
 	return r
 }
 
-type PostTenantRequestObject struct {
-	Body *PostTenantJSONRequestBody
+type GetApiV1TenantRequestObject struct {
 }
 
-type PostTenantResponseObject interface {
-	VisitPostTenantResponse(w http.ResponseWriter) error
+type GetApiV1TenantResponseObject interface {
+	VisitGetApiV1TenantResponse(w http.ResponseWriter) error
 }
 
-type PostTenant200JSONResponse struct {
-	Tenant *Tenant `json:"tenant,omitempty"`
+type GetApiV1Tenant200JSONResponse struct {
+	Tenants []Tenant `json:"tenants"`
 }
 
-func (response PostTenant200JSONResponse) VisitPostTenantResponse(w http.ResponseWriter) error {
+func (response GetApiV1Tenant200JSONResponse) VisitGetApiV1TenantResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type PostTenant400JSONResponse struct {
+type PostApiV1TenantRequestObject struct {
+	Body *PostApiV1TenantJSONRequestBody
+}
+
+type PostApiV1TenantResponseObject interface {
+	VisitPostApiV1TenantResponse(w http.ResponseWriter) error
+}
+
+type PostApiV1Tenant200JSONResponse struct {
+	Tenant Tenant `json:"tenant"`
+}
+
+func (response PostApiV1Tenant200JSONResponse) VisitPostApiV1TenantResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PostApiV1Tenant400JSONResponse struct {
 	Data *struct {
 		Name      *[]string `json:"name"`
 		ShortCode *[]string `json:"shortCode"`
@@ -497,7 +1167,80 @@ type PostTenant400JSONResponse struct {
 	ErrorMessage *string `json:"errorMessage,omitempty"`
 }
 
-func (response PostTenant400JSONResponse) VisitPostTenantResponse(w http.ResponseWriter) error {
+func (response PostApiV1Tenant400JSONResponse) VisitPostApiV1TenantResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiV1TenantTenantIdRequestObject struct {
+	TenantId string `json:"tenantId"`
+}
+
+type GetApiV1TenantTenantIdResponseObject interface {
+	VisitGetApiV1TenantTenantIdResponse(w http.ResponseWriter) error
+}
+
+type GetApiV1TenantTenantId200JSONResponse struct {
+	Tenant Tenant `json:"tenant"`
+}
+
+func (response GetApiV1TenantTenantId200JSONResponse) VisitGetApiV1TenantTenantIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiV1UserRequestObject struct {
+	Body *GetApiV1UserJSONRequestBody
+}
+
+type GetApiV1UserResponseObject interface {
+	VisitGetApiV1UserResponse(w http.ResponseWriter) error
+}
+
+type GetApiV1User200JSONResponse struct {
+	Users []User `json:"users"`
+}
+
+func (response GetApiV1User200JSONResponse) VisitGetApiV1UserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PostApiV1UserRequestObject struct {
+	Body *PostApiV1UserJSONRequestBody
+}
+
+type PostApiV1UserResponseObject interface {
+	VisitPostApiV1UserResponse(w http.ResponseWriter) error
+}
+
+type PostApiV1User200JSONResponse struct {
+	User User `json:"user"`
+}
+
+func (response PostApiV1User200JSONResponse) VisitPostApiV1UserResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PostApiV1User400JSONResponse struct {
+	Errors *struct {
+		Email    *[]string `json:"email,omitempty"`
+		Name     *[]string `json:"name,omitempty"`
+		Role     *[]string `json:"role,omitempty"`
+		TenantId *[]string `json:"tenantId,omitempty"`
+	} `json:"errors,omitempty"`
+}
+
+func (response PostApiV1User400JSONResponse) VisitPostApiV1UserResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(400)
 
@@ -507,8 +1250,20 @@ func (response PostTenant400JSONResponse) VisitPostTenantResponse(w http.Respons
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 
-	// (POST /v1/tenant)
-	PostTenant(ctx context.Context, request PostTenantRequestObject) (PostTenantResponseObject, error)
+	// (GET /api/v1/tenant)
+	GetApiV1Tenant(ctx context.Context, request GetApiV1TenantRequestObject) (GetApiV1TenantResponseObject, error)
+
+	// (POST /api/v1/tenant)
+	PostApiV1Tenant(ctx context.Context, request PostApiV1TenantRequestObject) (PostApiV1TenantResponseObject, error)
+	// Your GET endpoint
+	// (GET /api/v1/tenant/{tenantId})
+	GetApiV1TenantTenantId(ctx context.Context, request GetApiV1TenantTenantIdRequestObject) (GetApiV1TenantTenantIdResponseObject, error)
+	// Your GET endpoint
+	// (GET /api/v1/user)
+	GetApiV1User(ctx context.Context, request GetApiV1UserRequestObject) (GetApiV1UserResponseObject, error)
+
+	// (POST /api/v1/user)
+	PostApiV1User(ctx context.Context, request PostApiV1UserRequestObject) (PostApiV1UserResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, args interface{}) (interface{}, error)
@@ -541,11 +1296,35 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
-// PostTenant operation middleware
-func (sh *strictHandler) PostTenant(w http.ResponseWriter, r *http.Request) {
-	var request PostTenantRequestObject
+// GetApiV1Tenant operation middleware
+func (sh *strictHandler) GetApiV1Tenant(w http.ResponseWriter, r *http.Request) {
+	var request GetApiV1TenantRequestObject
 
-	var body PostTenantJSONRequestBody
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiV1Tenant(ctx, request.(GetApiV1TenantRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiV1Tenant")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiV1TenantResponseObject); ok {
+		if err := validResponse.VisitGetApiV1TenantResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("Unexpected response type: %T", response))
+	}
+}
+
+// PostApiV1Tenant operation middleware
+func (sh *strictHandler) PostApiV1Tenant(w http.ResponseWriter, r *http.Request) {
+	var request PostApiV1TenantRequestObject
+
+	var body PostApiV1TenantJSONRequestBody
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
 		return
@@ -553,18 +1332,106 @@ func (sh *strictHandler) PostTenant(w http.ResponseWriter, r *http.Request) {
 	request.Body = &body
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.PostTenant(ctx, request.(PostTenantRequestObject))
+		return sh.ssi.PostApiV1Tenant(ctx, request.(PostApiV1TenantRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "PostTenant")
+		handler = middleware(handler, "PostApiV1Tenant")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(PostTenantResponseObject); ok {
-		if err := validResponse.VisitPostTenantResponse(w); err != nil {
+	} else if validResponse, ok := response.(PostApiV1TenantResponseObject); ok {
+		if err := validResponse.VisitPostApiV1TenantResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("Unexpected response type: %T", response))
+	}
+}
+
+// GetApiV1TenantTenantId operation middleware
+func (sh *strictHandler) GetApiV1TenantTenantId(w http.ResponseWriter, r *http.Request, tenantId string) {
+	var request GetApiV1TenantTenantIdRequestObject
+
+	request.TenantId = tenantId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiV1TenantTenantId(ctx, request.(GetApiV1TenantTenantIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiV1TenantTenantId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiV1TenantTenantIdResponseObject); ok {
+		if err := validResponse.VisitGetApiV1TenantTenantIdResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("Unexpected response type: %T", response))
+	}
+}
+
+// GetApiV1User operation middleware
+func (sh *strictHandler) GetApiV1User(w http.ResponseWriter, r *http.Request) {
+	var request GetApiV1UserRequestObject
+
+	var body GetApiV1UserJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiV1User(ctx, request.(GetApiV1UserRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiV1User")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiV1UserResponseObject); ok {
+		if err := validResponse.VisitGetApiV1UserResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("Unexpected response type: %T", response))
+	}
+}
+
+// PostApiV1User operation middleware
+func (sh *strictHandler) PostApiV1User(w http.ResponseWriter, r *http.Request) {
+	var request PostApiV1UserRequestObject
+
+	var body PostApiV1UserJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PostApiV1User(ctx, request.(PostApiV1UserRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostApiV1User")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PostApiV1UserResponseObject); ok {
+		if err := validResponse.VisitPostApiV1UserResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

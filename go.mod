@@ -3,7 +3,9 @@ module measure
 go 1.20
 
 require (
+	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/deepmap/oapi-codegen v1.12.4 // indirect
 	github.com/getkin/kin-openapi v0.115.0 // indirect
 	github.com/go-chi/chi/v5 v5.0.8 // indirect
 	github.com/go-jet/jet v2.3.0+incompatible // indirect

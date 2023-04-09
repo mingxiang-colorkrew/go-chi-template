@@ -6,11 +6,14 @@ import (
 	"measure/oapi"
 	domainservice "measure/src/domain_service"
 	"measure/src/mutation"
-	"measure/src/repository"
+	"measure/src/repository/single"
 )
 
-func CreateTenantAppService(app *config.App, req oapi.PostTenantRequestObject) (oapi.PostTenantResponseObject, error) {
-	existingTenant, _ := repository.GetTenantByShortCode(app.DB(), req.Body.ShortCode)
+func CreateTenantAppService(
+	app *config.App,
+	req oapi.PostApiV1TenantRequestObject,
+) (oapi.PostApiV1TenantResponseObject, error) {
+	existingTenant, _ := single.GetTenantByShortCode(app, req.Body.ShortCode)
 
 	if existingTenant != nil {
 		errCode := "validation_07x4g2"
@@ -23,7 +26,7 @@ func CreateTenantAppService(app *config.App, req oapi.PostTenantRequestObject) (
 			ShortCode: &[]string{"validation.unique"},
 		}
 
-		resp := oapi.PostTenant400JSONResponse{
+		resp := oapi.PostApiV1Tenant400JSONResponse{
 			ErrorCode:    &errCode,
 			ErrorMessage: &errMsg,
 			Data:         &errData,
@@ -38,8 +41,8 @@ func CreateTenantAppService(app *config.App, req oapi.PostTenantRequestObject) (
 		return nil, insertErr
 	}
 
-	resp := oapi.PostTenant200JSONResponse{
-		Tenant: &oapi.Tenant{
+	resp := oapi.PostApiV1Tenant200JSONResponse{
+		Tenant: oapi.Tenant{
 			Id:        fmt.Sprint(insertedTenant.ID),
 			Name:      insertedTenant.Name,
 			ShortCode: insertedTenant.ShortCode,

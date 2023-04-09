@@ -7,7 +7,9 @@ import (
 )
 
 func InsertTenant(app *config.App, tenant *model.Tenant) (*model.Tenant, error) {
-	insertStmt := table.Tenant.INSERT(table.Tenant.MutableColumns).MODEL(tenant).RETURNING(table.Tenant.AllColumns)
+	insertStmt := table.Tenant.INSERT(table.Tenant.MutableColumns).
+		MODEL(tenant).
+		RETURNING(table.Tenant.AllColumns)
 	dest := []model.Tenant{}
 
 	err := insertStmt.Query(app.DB(), &dest)

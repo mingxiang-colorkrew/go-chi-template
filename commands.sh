@@ -60,6 +60,13 @@ case "$2" in
     oapi-codegen -config oapi/codegen.yaml oapi/openapi-input.json
     echo 'Finished generating openapi code';
     ;;
+  "format")
+    echo 'formatting all code';
+    go fmt ./...
+    goimports -w .
+    golines -w .
+    echo 'finished formatting all code';
+    ;;
   *)
     echo 'ERROR: No command provided'
     cli_help
