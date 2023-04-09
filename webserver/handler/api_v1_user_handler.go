@@ -21,3 +21,11 @@ func (handler *Handler) GetApiV1User(
 	resp, err := v1.ListUserAppService(handler.app, request)
 	return resp, err
 }
+
+func (handler *Handler) GetApiV1UserUserId(
+	ctx context.Context,
+	request oapi.GetApiV1UserUserIdRequestObject,
+) (oapi.GetApiV1UserUserIdResponseObject, error) {
+	resp, err := v1.DetailUserAppService(handler.app, request)
+	return resp, err
+}

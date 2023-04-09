@@ -1,0 +1,28 @@
+package multi
+
+import (
+	"measure/config"
+	"measure/db/measure/public/table"
+	"measure/src/dto"
+
+	. "github.com/go-jet/jet/v2/postgres"
+)
+
+func GetUserWithTenantById(app *config.App, id int) (*dto.UserWithTenantDto, error) {
+	tenantTbl := table.Tenant
+	userTbl := table.User
+
+	stmt := SELECT(
+		userTbl.AllColumns,
+		tenantTbl.AllColumns,
+	).FROM(tenantTbl.INNER_JOIN(userTbl, userTbl.TenantID.EQ(tenantTbl.ID)))
+
+	rows := []dto.UserWithTenantDto{}
+	err := stmt.Query(app.DB(), &rows)
+
+	if len(rows) != 1 {
+		return nil, err
+	}
+
+	return &rows[0], err
+}

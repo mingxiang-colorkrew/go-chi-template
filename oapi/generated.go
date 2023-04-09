@@ -158,6 +158,9 @@ type ClientInterface interface {
 	PostApiV1UserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostApiV1User(ctx context.Context, body PostApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiV1UserUserId request with any body
+	GetApiV1UserUserIdWithBody(ctx context.Context, userId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetApiV1Tenant(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -246,6 +249,18 @@ func (c *Client) PostApiV1UserWithBody(ctx context.Context, contentType string, 
 
 func (c *Client) PostApiV1User(ctx context.Context, body PostApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostApiV1UserRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetApiV1UserUserIdWithBody(ctx context.Context, userId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1UserUserIdRequestWithBody(c.Server, userId, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -437,6 +452,42 @@ func NewPostApiV1UserRequestWithBody(server string, contentType string, body io.
 	return req, nil
 }
 
+// NewGetApiV1UserUserIdRequestWithBody generates requests for GetApiV1UserUserId with any type of body
+func NewGetApiV1UserUserIdRequestWithBody(server string, userId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "userId", runtime.ParamLocationPath, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/user/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -500,6 +551,9 @@ type ClientWithResponsesInterface interface {
 	PostApiV1UserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiV1UserResponse, error)
 
 	PostApiV1UserWithResponse(ctx context.Context, body PostApiV1UserJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiV1UserResponse, error)
+
+	// GetApiV1UserUserId request with any body
+	GetApiV1UserUserIdWithBodyWithResponse(ctx context.Context, userId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetApiV1UserUserIdResponse, error)
 }
 
 type GetApiV1TenantResponse struct {
@@ -563,6 +617,9 @@ type GetApiV1TenantTenantIdResponse struct {
 	HTTPResponse *http.Response
 	JSON200      *struct {
 		Tenant Tenant `json:"tenant"`
+	}
+	JSON404 *struct {
+		Message string `json:"message"`
 	}
 }
 
@@ -638,6 +695,33 @@ func (r PostApiV1UserResponse) StatusCode() int {
 	return 0
 }
 
+type GetApiV1UserUserIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		User User `json:"user"`
+	}
+	JSON404 *struct {
+		Message string `json:"message"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiV1UserUserIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiV1UserUserIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // GetApiV1TenantWithResponse request returning *GetApiV1TenantResponse
 func (c *ClientWithResponses) GetApiV1TenantWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1TenantResponse, error) {
 	rsp, err := c.GetApiV1Tenant(ctx, reqEditors...)
@@ -705,6 +789,15 @@ func (c *ClientWithResponses) PostApiV1UserWithResponse(ctx context.Context, bod
 		return nil, err
 	}
 	return ParsePostApiV1UserResponse(rsp)
+}
+
+// GetApiV1UserUserIdWithBodyWithResponse request with arbitrary body returning *GetApiV1UserUserIdResponse
+func (c *ClientWithResponses) GetApiV1UserUserIdWithBodyWithResponse(ctx context.Context, userId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetApiV1UserUserIdResponse, error) {
+	rsp, err := c.GetApiV1UserUserIdWithBody(ctx, userId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiV1UserUserIdResponse(rsp)
 }
 
 // ParseGetApiV1TenantResponse parses an HTTP response from a GetApiV1TenantWithResponse call
@@ -800,6 +893,15 @@ func ParseGetApiV1TenantTenantIdResponse(rsp *http.Response) (*GetApiV1TenantTen
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Message string `json:"message"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
 	}
 
 	return response, nil
@@ -875,6 +977,43 @@ func ParsePostApiV1UserResponse(rsp *http.Response) (*PostApiV1UserResponse, err
 	return response, nil
 }
 
+// ParseGetApiV1UserUserIdResponse parses an HTTP response from a GetApiV1UserUserIdWithResponse call
+func ParseGetApiV1UserUserIdResponse(rsp *http.Response) (*GetApiV1UserUserIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiV1UserUserIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			User User `json:"user"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest struct {
+			Message string `json:"message"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
@@ -892,6 +1031,9 @@ type ServerInterface interface {
 
 	// (POST /api/v1/user)
 	PostApiV1User(w http.ResponseWriter, r *http.Request)
+	// Your GET endpoint
+	// (GET /api/v1/user/{userId})
+	GetApiV1UserUserId(w http.ResponseWriter, r *http.Request, userId string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -980,6 +1122,32 @@ func (siw *ServerInterfaceWrapper) PostApiV1User(w http.ResponseWriter, r *http.
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.PostApiV1User(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// GetApiV1UserUserId operation middleware
+func (siw *ServerInterfaceWrapper) GetApiV1UserUserId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "userId" -------------
+	var userId string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, chi.URLParam(r, "userId"), &userId)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
+		return
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiV1UserUserId(w, r, userId)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1117,6 +1285,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/user", wrapper.PostApiV1User)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/user/{userId}", wrapper.GetApiV1UserUserId)
+	})
 
 	return r
 }
@@ -1193,6 +1364,17 @@ func (response GetApiV1TenantTenantId200JSONResponse) VisitGetApiV1TenantTenantI
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetApiV1TenantTenantId404JSONResponse struct {
+	Message string `json:"message"`
+}
+
+func (response GetApiV1TenantTenantId404JSONResponse) VisitGetApiV1TenantTenantIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type GetApiV1UserRequestObject struct {
 	Body *GetApiV1UserJSONRequestBody
 }
@@ -1247,6 +1429,36 @@ func (response PostApiV1User400JSONResponse) VisitPostApiV1UserResponse(w http.R
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetApiV1UserUserIdRequestObject struct {
+	UserId string `json:"userId"`
+}
+
+type GetApiV1UserUserIdResponseObject interface {
+	VisitGetApiV1UserUserIdResponse(w http.ResponseWriter) error
+}
+
+type GetApiV1UserUserId200JSONResponse struct {
+	User User `json:"user"`
+}
+
+func (response GetApiV1UserUserId200JSONResponse) VisitGetApiV1UserUserIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetApiV1UserUserId404JSONResponse struct {
+	Message string `json:"message"`
+}
+
+func (response GetApiV1UserUserId404JSONResponse) VisitGetApiV1UserUserIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 
@@ -1264,6 +1476,9 @@ type StrictServerInterface interface {
 
 	// (POST /api/v1/user)
 	PostApiV1User(ctx context.Context, request PostApiV1UserRequestObject) (PostApiV1UserResponseObject, error)
+	// Your GET endpoint
+	// (GET /api/v1/user/{userId})
+	GetApiV1UserUserId(ctx context.Context, request GetApiV1UserUserIdRequestObject) (GetApiV1UserUserIdResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, args interface{}) (interface{}, error)
@@ -1432,6 +1647,32 @@ func (sh *strictHandler) PostApiV1User(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(PostApiV1UserResponseObject); ok {
 		if err := validResponse.VisitPostApiV1UserResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("Unexpected response type: %T", response))
+	}
+}
+
+// GetApiV1UserUserId operation middleware
+func (sh *strictHandler) GetApiV1UserUserId(w http.ResponseWriter, r *http.Request, userId string) {
+	var request GetApiV1UserUserIdRequestObject
+
+	request.UserId = userId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiV1UserUserId(ctx, request.(GetApiV1UserUserIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiV1UserUserId")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiV1UserUserIdResponseObject); ok {
+		if err := validResponse.VisitGetApiV1UserUserIdResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
