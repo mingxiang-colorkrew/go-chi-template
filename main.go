@@ -12,14 +12,13 @@ func main() {
 		command = os.Args[1]
 	}
 
-	appEnv := config.GetAppEnv()
-	app := config.NewApp(appEnv)
-	h := handler.NewHandler(app)
-	app.SetupRouter(h)
+	a := config.NewApp()
+	h := handler.NewHandler(a)
+	webserver := config.NewWebserver(a, h)
 
 	if command == "routes:list" {
-		app.PrintRoutes()
+		webserver.PrintRoutes()
 	} else {
-		app.Start()
+		webserver.Start()
 	}
 }

@@ -2,83 +2,38 @@ package config
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
-	"measure/oapi"
-	"net/http"
 	"path"
 	"runtime"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 )
 
 type App struct {
-	env     AppEnv
-	envVars *EnvProvider
+	env     *EnvProvider
 	db      *sql.DB
-	router  *chi.Mux
 	rootDir string
 }
 
-func (app *App) Env() AppEnv {
-	return app.env
-}
-
 func (app *App) EnvVars() *EnvProvider {
-	return app.envVars
+	return app.env
 }
 
 func (app *App) DB() *sql.DB {
 	return app.db
 }
 
-func (app *App) setupEnv(appEnv AppEnv) {
-	app.env = appEnv
+func (app *App) setEnv() {
+	app.env = NewEnvProvider(app.rootDir)
+}
+
+func (app *App) setRootDir() {
 	_, b, _, _ := runtime.Caller(0)
-	// should be the root directory
 	app.rootDir = path.Join(path.Dir(b), "..")
-	app.envVars = NewEnvProvider(app.rootDir, app.env)
 }
 
-func (app *App) SetupRouter(handler oapi.StrictServerInterface) {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-
-	baseUrl := ""
-	strictHandler := oapi.NewStrictHandler(handler, []oapi.StrictMiddlewareFunc{})
-	oapi.HandlerFromMuxWithBaseURL(strictHandler, r, baseUrl)
-
-	app.router = r
-}
-
-func (app *App) Start() {
-
-	serverAddr := ":" + app.EnvVars().ServerPort()
-	log.Print("server listening on " + serverAddr)
-
-	s := &http.Server{
-		Handler: app.router,
-		Addr:    serverAddr,
-	}
-
-	log.Fatal(s.ListenAndServe())
-}
-
-func (app *App) PrintRoutes() {
-	chi.Walk(
-		app.router,
-		func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
-			fmt.Printf("[%s]: '%s' has %d middlewares\n", method, route, len(middlewares))
-			return nil
-		},
-	)
-}
-
-func NewApp(appEnv AppEnv) *App {
+func NewApp() *App {
 	app := App{}
 
-	app.setupEnv(appEnv)
+	app.setRootDir()
+	app.setEnv()
 	app.setupDb()
 
 	return &app

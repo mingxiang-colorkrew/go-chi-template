@@ -2,12 +2,18 @@
 
 cli_help() {
   echo "
+  Available Environments(pass as --env=local)
+  local, production
+
   Available commands
+
   --env={env} server                              Runs local dev server
   --env={env} migration:run                       Runs migrations and autogenerates DB models
-  --env={env} migration:create {migration_name}   Create a new migration
   --env={env} routes:list                         Lists all registered routes
-  --env={env} openapi:codegen                     Autogenerates OpenAPI Client/Server code 
+
+  migration:create {migration_name}   Create a new migration
+  openapi:codegen                     Autogenerates OpenAPI Client/Server code 
+  format                              Formats output 
   "
 }
 
@@ -23,6 +29,26 @@ case "$1" in
     ;;
   "help")
     cli_help
+    exit 0
+    ;;
+  "openapi:codegen")
+    echo 'Generating OpenAPI client/server code from oapi/openapi-input.json';
+    oapi-codegen -config oapi/codegen.yaml oapi/openapi-input.json
+    echo 'Finished generating openapi code';
+    exit 0
+    ;;
+  "format")
+    echo 'Formatting all code';
+    go fmt ./...
+    goimports -w .
+    golines -w .
+    echo 'Finished formatting all code';
+    exit 0
+    ;;
+  "migration:create")
+    echo 'Creating migrations in db/migrations'
+    migrate create -ext sql -dir db/migrations "$3"
+    echo 'Finished creating migrations';
     exit 0
     ;;
   *)
@@ -42,30 +68,13 @@ case "$2" in
     rm db/*/*/table/schema_migrations.go
     echo 'Finished running migrations';
     ;;
-  "migration:create")
-    echo 'Creating migrations in db/migrations'
-    migrate create -ext sql -dir db/migrations "$3"
-    echo 'Finished creating migrations';
-    ;;
   "serve")
-    echo 'Starting local server';
+    echo 'Starting server';
     go run .
     ;;
   "routes:list")
     echo 'Listing routes';
     go run . routes:list
-    ;;
-  "openapi:codegen")
-    echo 'Generating OpenAPI client/server code from oapi/openapi-input.json';
-    oapi-codegen -config oapi/codegen.yaml oapi/openapi-input.json
-    echo 'Finished generating openapi code';
-    ;;
-  "format")
-    echo 'formatting all code';
-    go fmt ./...
-    goimports -w .
-    golines -w .
-    echo 'finished formatting all code';
     ;;
   *)
     echo 'ERROR: No command provided'

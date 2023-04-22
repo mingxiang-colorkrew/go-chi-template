@@ -8,7 +8,7 @@ import (
 )
 
 func (app *App) setupDb() {
-	db, error := sql.Open("postgres", app.envVars.databaseUrl)
+	db, error := sql.Open("postgres", app.env.databaseUrl)
 
 	if error != nil {
 		log.Fatal("Unable to connect to database")
