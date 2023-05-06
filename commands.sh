@@ -7,7 +7,7 @@ cli_help() {
 
   Available commands
 
-  --env={env} server                              Runs local dev server
+  --env={env} serve                               Runs local dev server
   --env={env} migration:run                       Runs migrations and autogenerates DB models
   --env={env} routes:list                         Lists all registered routes
 

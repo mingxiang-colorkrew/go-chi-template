@@ -9,29 +9,16 @@ import (
 	"measure/src/repository/single"
 )
 
-func CreateTenantAppService(
+func TenantCreateAppService(
 	app *config.App,
 	req oapi.PostApiV1TenantRequestObject,
 ) (oapi.PostApiV1TenantResponseObject, error) {
 	existingTenant, _ := single.GetTenantByShortCode(app, req.Body.ShortCode)
 
 	if existingTenant != nil {
-		errCode := "validation_07x4g2"
-		errMsg := "Validation failed"
-		errData := struct {
-			Name      *[]string `json:"name"`
-			ShortCode *[]string `json:"shortCode"`
-		}{
-			Name:      &[]string{},
-			ShortCode: &[]string{"validation.unique"},
-		}
-
-		resp := oapi.PostApiV1Tenant400JSONResponse{
-			ErrorCode:    &errCode,
-			ErrorMessage: &errMsg,
-			Data:         &errData,
-		}
-		return &resp, nil
+		test := new(oapi.PostApiV1Tenant400JSONResponse)
+		test.Data.ShortCode = &[]string{"validation.unique"}
+		return test, nil
 	}
 
 	newTenant := domainservice.NewTenant(req.Body.Name, req.Body.ShortCode)

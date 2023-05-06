@@ -28,6 +28,12 @@ type Tenant struct {
 	UserCount *int       `json:"userCount,omitempty"`
 }
 
+// TenantCreateValidationError defines model for TenantCreateValidationError.
+type TenantCreateValidationError struct {
+	Name      *[]string `json:"name,omitempty"`
+	ShortCode *[]string `json:"shortCode,omitempty"`
+}
+
 // User defines model for User.
 type User struct {
 	Email  *string `json:"email,omitempty"`
@@ -587,12 +593,9 @@ type PostApiV1TenantResponse struct {
 		Tenant Tenant `json:"tenant"`
 	}
 	JSON400 *struct {
-		Data *struct {
-			Name      *[]string `json:"name"`
-			ShortCode *[]string `json:"shortCode"`
-		} `json:"data,omitempty"`
-		ErrorCode    *string `json:"errorCode,omitempty"`
-		ErrorMessage *string `json:"errorMessage,omitempty"`
+		Data         *TenantCreateValidationError `json:"data,omitempty"`
+		ErrorCode    *string                      `json:"errorCode,omitempty"`
+		ErrorMessage *string                      `json:"errorMessage,omitempty"`
 	}
 }
 
@@ -853,12 +856,9 @@ func ParsePostApiV1TenantResponse(rsp *http.Response) (*PostApiV1TenantResponse,
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest struct {
-			Data *struct {
-				Name      *[]string `json:"name"`
-				ShortCode *[]string `json:"shortCode"`
-			} `json:"data,omitempty"`
-			ErrorCode    *string `json:"errorCode,omitempty"`
-			ErrorMessage *string `json:"errorMessage,omitempty"`
+			Data         *TenantCreateValidationError `json:"data,omitempty"`
+			ErrorCode    *string                      `json:"errorCode,omitempty"`
+			ErrorMessage *string                      `json:"errorMessage,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -1330,12 +1330,9 @@ func (response PostApiV1Tenant200JSONResponse) VisitPostApiV1TenantResponse(w ht
 }
 
 type PostApiV1Tenant400JSONResponse struct {
-	Data *struct {
-		Name      *[]string `json:"name"`
-		ShortCode *[]string `json:"shortCode"`
-	} `json:"data,omitempty"`
-	ErrorCode    *string `json:"errorCode,omitempty"`
-	ErrorMessage *string `json:"errorMessage,omitempty"`
+	Data         *TenantCreateValidationError `json:"data,omitempty"`
+	ErrorCode    *string                      `json:"errorCode,omitempty"`
+	ErrorMessage *string                      `json:"errorMessage,omitempty"`
 }
 
 func (response PostApiV1Tenant400JSONResponse) VisitPostApiV1TenantResponse(w http.ResponseWriter) error {

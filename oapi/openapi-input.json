@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "x-stoplight": {
-    "id": "pery83chv9cf7"
+    "id": "itbrpnesv8cwz"
   },
   "info": {
     "title": "v1-3.0",
@@ -27,10 +27,7 @@
                   "type": "object",
                   "properties": {
                     "tenant": {
-                      "$ref": "#/components/schemas/Tenant",
-                      "x-stoplight": {
-                        "id": "7oesyzv61d1v8"
-                      }
+                      "$ref": "#/components/schemas/Tenant"
                     }
                   },
                   "required": [
@@ -50,48 +47,17 @@
                     "errorCode": {
                       "type": "string",
                       "x-stoplight": {
-                        "id": "ijzp33f6fwy28"
+                        "id": "rllkwwmo77ycn"
                       }
                     },
                     "errorMessage": {
                       "type": "string",
                       "x-stoplight": {
-                        "id": "r5s8tghadx8ud"
+                        "id": "318rxk5s2c7f8"
                       }
                     },
                     "data": {
-                      "type": "object",
-                      "x-stoplight": {
-                        "id": "gpwrprt9qo8ic"
-                      },
-                      "properties": {
-                        "name": {
-                          "type": "array",
-                          "x-stoplight": {
-                            "id": "dtx34sschawhn"
-                          },
-                          "nullable": true,
-                          "items": {
-                            "x-stoplight": {
-                              "id": "hom8l0gi2gh7o"
-                            },
-                            "type": "string"
-                          }
-                        },
-                        "shortCode": {
-                          "type": "array",
-                          "x-stoplight": {
-                            "id": "ywxr4z58zwnd7"
-                          },
-                          "nullable": true,
-                          "items": {
-                            "x-stoplight": {
-                              "id": "4d3j2r209pb80"
-                            },
-                            "type": "string"
-                          }
-                        }
-                      }
+                      "$ref": "#/components/schemas/TenantCreateValidationError"
                     }
                   }
                 }
@@ -109,13 +75,13 @@
                   "name": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "mugcmm4a4syni"
+                      "id": "l640ydkl5vi2l"
                     }
                   },
                   "shortCode": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "h3q5yhforhdes"
+                      "id": "qbns5l6tvjzmv"
                     },
                     "minLength": 4,
                     "maxLength": 5
@@ -145,13 +111,10 @@
                     "tenants": {
                       "type": "array",
                       "x-stoplight": {
-                        "id": "i39zf3rqasrgp"
+                        "id": "abxq0cdwy04ay"
                       },
                       "items": {
-                        "$ref": "#/components/schemas/Tenant",
-                        "x-stoplight": {
-                          "id": "rcffzqyktj1xs"
-                        }
+                        "$ref": "#/components/schemas/Tenant"
                       }
                     }
                   },
@@ -178,7 +141,7 @@
         }
       ],
       "get": {
-        "summary": "Your GET endpoint",
+        "summary": "Get Tenant By ID",
         "tags": [],
         "responses": {
           "200": {
@@ -189,10 +152,7 @@
                   "type": "object",
                   "properties": {
                     "tenant": {
-                      "$ref": "#/components/schemas/Tenant",
-                      "x-stoplight": {
-                        "id": "j2gtmj95jn94m"
-                      }
+                      "$ref": "#/components/schemas/Tenant"
                     }
                   },
                   "required": [
@@ -212,7 +172,7 @@
                     "message": {
                       "type": "string",
                       "x-stoplight": {
-                        "id": "tgsb28ft6nkkh"
+                        "id": "8eri3zah5eveq"
                       }
                     }
                   },
@@ -230,7 +190,7 @@
     },
     "/api/v1/user": {
       "get": {
-        "summary": "Your GET endpoint",
+        "summary": "Get all users",
         "tags": [],
         "responses": {
           "200": {
@@ -243,13 +203,10 @@
                     "users": {
                       "type": "array",
                       "x-stoplight": {
-                        "id": "w2z37fjmmrmky"
+                        "id": "no1eber5t0mk1"
                       },
                       "items": {
-                        "$ref": "#/components/schemas/User",
-                        "x-stoplight": {
-                          "id": "63zq98s5tl8ec"
-                        }
+                        "$ref": "#/components/schemas/User"
                       }
                     }
                   },
@@ -271,7 +228,7 @@
                   "tenantId": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "j21273dhjc1dn"
+                      "id": "dxk6govsvrnvs"
                     }
                   }
                 },
@@ -296,10 +253,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "$ref": "#/components/schemas/User",
-                      "x-stoplight": {
-                        "id": "5xvn8ptnrri9k"
-                      }
+                      "$ref": "#/components/schemas/User"
                     }
                   },
                   "required": [
@@ -319,17 +273,17 @@
                     "errors": {
                       "type": "object",
                       "x-stoplight": {
-                        "id": "z5ffbwtgz1ccc"
+                        "id": "53na03s5sgohk"
                       },
                       "properties": {
                         "name": {
                           "type": "array",
                           "x-stoplight": {
-                            "id": "iprlizcinawyw"
+                            "id": "plfj5dibl189i"
                           },
                           "items": {
                             "x-stoplight": {
-                              "id": "gh9sp7k213kmn"
+                              "id": "n6luib2o3uu3e"
                             },
                             "type": "string"
                           }
@@ -337,11 +291,11 @@
                         "email": {
                           "type": "array",
                           "x-stoplight": {
-                            "id": "fzw5vm67gjprm"
+                            "id": "j1tkyzwzidcji"
                           },
                           "items": {
                             "x-stoplight": {
-                              "id": "izmt148dhif38"
+                              "id": "16036ktjfxps2"
                             },
                             "type": "string"
                           }
@@ -349,11 +303,11 @@
                         "role": {
                           "type": "array",
                           "x-stoplight": {
-                            "id": "v8u4iuvn9e78r"
+                            "id": "0ok9j36cw28n7"
                           },
                           "items": {
                             "x-stoplight": {
-                              "id": "xx4z36zs35g1j"
+                              "id": "j27jtn8yqcp4t"
                             },
                             "type": "string"
                           }
@@ -361,11 +315,11 @@
                         "tenantId": {
                           "type": "array",
                           "x-stoplight": {
-                            "id": "q7nzdhq54ffgy"
+                            "id": "rims4uzr73il3"
                           },
                           "items": {
                             "x-stoplight": {
-                              "id": "4kfzvxbk255go"
+                              "id": "rfruzjxt6jwde"
                             },
                             "type": "string"
                           }
@@ -387,26 +341,26 @@
                   "name": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "n9d4k0gb8l4z8"
+                      "id": "ql35fy8fab36q"
                     },
                     "nullable": true
                   },
                   "email": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "4vx1aa49whr4h"
+                      "id": "kkqgedndn8gxm"
                     }
                   },
                   "role": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "ncgaidb39ngmw"
+                      "id": "2nmfgn72yam4r"
                     }
                   },
                   "tenantId": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "gcsyy69x1jcjo"
+                      "id": "4jtp1ds0qzomc"
                     }
                   }
                 },
@@ -434,7 +388,7 @@
         }
       ],
       "get": {
-        "summary": "Your GET endpoint",
+        "summary": "Get User By ID",
         "tags": [],
         "responses": {
           "200": {
@@ -445,10 +399,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "$ref": "#/components/schemas/User",
-                      "x-stoplight": {
-                        "id": "099iepaa4pucz"
-                      }
+                      "$ref": "#/components/schemas/User"
                     }
                   },
                   "required": [
@@ -468,7 +419,7 @@
                     "message": {
                       "type": "string",
                       "x-stoplight": {
-                        "id": "2ie1thx69i959"
+                        "id": "eae66flzsrrmi"
                       }
                     }
                   },
@@ -493,7 +444,7 @@
       "Tenant": {
         "title": "Tenant",
         "x-stoplight": {
-          "id": "qo44618hav2xb"
+          "id": "ll8gjytmdcflr"
         },
         "type": "object",
         "x-examples": {
@@ -512,13 +463,13 @@
           "name": {
             "type": "string",
             "x-stoplight": {
-              "id": "vx3vwx11f570d"
+              "id": "p6mta5h4inbga"
             }
           },
           "shortCode": {
             "type": "string",
             "x-stoplight": {
-              "id": "ygqt9q05oe3qp"
+              "id": "bk29f93ygkv6w"
             },
             "minLength": 4,
             "maxLength": 5
@@ -526,21 +477,21 @@
           "createdAt": {
             "type": "string",
             "x-stoplight": {
-              "id": "0p80arujaiwa9"
+              "id": "zajfcu1d17uw5"
             },
             "format": "date-time"
           },
           "updatedAt": {
             "type": "string",
             "x-stoplight": {
-              "id": "qonxuo2sxut2l"
+              "id": "4muy39fu375yx"
             },
             "format": "date-time"
           },
           "userCount": {
             "type": "integer",
             "x-stoplight": {
-              "id": "ugjq80yert5hn"
+              "id": "1d5ce65ef24qj"
             }
           }
         },
@@ -553,7 +504,7 @@
       "User": {
         "title": "User",
         "x-stoplight": {
-          "id": "bc6zu9os4752n"
+          "id": "ylasvjugjbegz"
         },
         "type": "object",
         "properties": {
@@ -563,26 +514,23 @@
           "name": {
             "type": "string",
             "x-stoplight": {
-              "id": "luiz9dce771hr"
+              "id": "5fsjcj7kpjcmm"
             }
           },
           "email": {
             "type": "string",
             "x-stoplight": {
-              "id": "4dlx4xbvnhwdy"
+              "id": "83jqzxar9lvns"
             }
           },
           "role": {
             "type": "string",
             "x-stoplight": {
-              "id": "emreyqg2s9pz1"
+              "id": "jsh6vgwiwtkuh"
             }
           },
           "tenant": {
-            "$ref": "#/components/schemas/Tenant",
-            "x-stoplight": {
-              "id": "knjbv7dj1z7e1"
-            }
+            "$ref": "#/components/schemas/Tenant"
           }
         },
         "required": [
@@ -592,7 +540,7 @@
       "Review": {
         "title": "Review",
         "x-stoplight": {
-          "id": "8drc41xny4e1s"
+          "id": "aqwr3p1nd7pdt"
         },
         "type": "object",
         "properties": {
@@ -602,27 +550,58 @@
           "content": {
             "type": "string",
             "x-stoplight": {
-              "id": "0brphr0o4s43v"
+              "id": "y0uo4gcb85gi3"
             }
           },
           "rating": {
             "type": "integer",
             "x-stoplight": {
-              "id": "b1okro5g3gldm"
+              "id": "evvg5xq9oveap"
             }
           },
           "user": {
-            "$ref": "#/components/schemas/User",
-            "x-stoplight": {
-              "id": "iskxfgpwxb0pl"
-            }
+            "$ref": "#/components/schemas/User"
           }
         },
         "required": [
           "id"
         ]
+      },
+      "TenantCreateValidationError": {
+        "title": "TenantCreateValidationError",
+        "x-stoplight": {
+          "id": "wj55zse6ktb2j"
+        },
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "array",
+            "x-stoplight": {
+              "id": "47q77sax5wx82"
+            },
+            "items": {
+              "x-stoplight": {
+                "id": "ovtovv01ysar3"
+              },
+              "type": "string"
+            }
+          },
+          "shortCode": {
+            "type": "array",
+            "x-stoplight": {
+              "id": "0aerw9z56n4g0"
+            },
+            "items": {
+              "x-stoplight": {
+                "id": "248xkq2zwe1dw"
+              },
+              "type": "string"
+            }
+          }
+        }
       }
     },
     "securitySchemes": {}
   }
 }
+

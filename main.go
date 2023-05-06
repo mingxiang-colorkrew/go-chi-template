@@ -14,11 +14,11 @@ func main() {
 
 	a := config.NewApp()
 	h := handler.NewHandler(a)
-	webserver := config.NewWebserver(a, h)
+	ws := config.NewWebserver(a, h)
 
 	if command == "routes:list" {
-		webserver.PrintRoutes()
+		ws.PrintRoutes()
 	} else {
-		webserver.Start()
+		ws.Start()
 	}
 }
