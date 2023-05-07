@@ -11,7 +11,7 @@ func (h *Handler) GetApiV1Tenant(
 	ctx context.Context,
 	request oapi.GetApiV1TenantRequestObject,
 ) (oapi.GetApiV1TenantResponseObject, error) {
-	resp, err := v1.ListTenantAppService(h.app, request)
+	resp, err := v1.TenantListAppService(h.app, request)
 	return resp, err
 }
 
@@ -34,6 +34,6 @@ func (h *Handler) GetApiV1TenantTenantId(
 	ctx context.Context,
 	request oapi.GetApiV1TenantTenantIdRequestObject,
 ) (oapi.GetApiV1TenantTenantIdResponseObject, error) {
-	resp, err := v1.DetailTenantAppService(h.app, request)
+	resp, err := v1.TenantDetailAppService(h.app, request)
 	return resp, err
 }

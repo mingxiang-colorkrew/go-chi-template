@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func DetailTenantAppService(
+func TenantDetailAppService(
 	app *config.App,
 	req oapi.GetApiV1TenantTenantIdRequestObject,
 ) (oapi.GetApiV1TenantTenantIdResponseObject, error) {
@@ -21,7 +21,9 @@ func DetailTenantAppService(
 		ShortCode: tenant.ShortCode,
 	}
 
-	return oapi.GetApiV1TenantTenantId200JSONResponse{
+  respDto := oapi.GetApiV1TenantTenantId200JSONResponse{
 		Tenant: tenantDto,
-	}, nil
+	}
+
+  return &respDto, nil
 }

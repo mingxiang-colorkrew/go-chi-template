@@ -1,568 +1,16 @@
 {
-  "openapi": "3.0.0",
-  "x-stoplight": {
-    "id": "9kpvvb1zm7l91"
-  },
-  "info": {
-    "title": "v1-3.0",
-    "version": "1.0",
-    "description": "Test API"
-  },
-  "servers": [
-    {
-      "url": "http://localhost:3000"
-    }
-  ],
-  "paths": {
-    "/api/v1/tenant": {
-      "post": {
-        "summary": "",
-        "operationId": "post-api-v1-tenant",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tenant": {
-                      "$ref": "#/components/schemas/Tenant"
-                    }
-                  },
-                  "required": [
-                    "tenant"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errorCode": {
-                      "type": "string",
-                      "x-stoplight": {
-                        "id": "y5jyvpx67xkm6"
-                      }
-                    },
-                    "errorMessage": {
-                      "type": "string",
-                      "x-stoplight": {
-                        "id": "a8gx3vf1ngax5"
-                      }
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/TenantCreateValidationError"
-                    }
-                  },
-                  "required": [
-                    "errorCode",
-                    "errorMessage",
-                    "data"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "Creates a new tenant",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "x-stoplight": {
-                      "id": "pmzim9yddimtv"
-                    }
-                  },
-                  "shortCode": {
-                    "type": "string",
-                    "x-stoplight": {
-                      "id": "aocf94ap0u7t0"
-                    },
-                    "minLength": 4,
-                    "maxLength": 5
-                  }
-                },
-                "required": [
-                  "name",
-                  "shortCode"
-                ]
-              }
-            }
-          }
-        }
-      },
-      "parameters": [],
-      "get": {
-        "summary": "",
-        "operationId": "get-api-v1-tenant",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tenants": {
-                      "type": "array",
-                      "x-stoplight": {
-                        "id": "n8tz67d0yoxsm"
-                      },
-                      "items": {
-                        "$ref": "#/components/schemas/Tenant"
-                      }
-                    }
-                  },
-                  "required": [
-                    "tenants"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "description": "List all tenants in the application"
-      }
-    },
-    "/api/v1/tenant/{tenantId}": {
-      "parameters": [
-        {
-          "schema": {
-            "type": "string"
-          },
-          "name": "tenantId",
-          "in": "path",
-          "required": true
-        }
-      ],
-      "get": {
-        "summary": "Get Tenant By ID",
-        "tags": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tenant": {
-                      "$ref": "#/components/schemas/Tenant"
-                    }
-                  },
-                  "required": [
-                    "tenant"
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "x-stoplight": {
-                        "id": "lbdk2x0b3fgl1"
-                      }
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "operationId": "get-api-v1-tenant-tenantId",
-        "description": "Get details for 1 tenant"
-      }
-    },
-    "/api/v1/user": {
-      "get": {
-        "summary": "Get all users",
-        "tags": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "users": {
-                      "type": "array",
-                      "x-stoplight": {
-                        "id": "0wnnvvcfoijy3"
-                      },
-                      "items": {
-                        "$ref": "#/components/schemas/User"
-                      }
-                    }
-                  },
-                  "required": [
-                    "users"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "operationId": "get-api-v1-user",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "tenantId": {
-                    "type": "string",
-                    "x-stoplight": {
-                      "id": "1iwlwvgn0wc7x"
-                    }
-                  }
-                },
-                "required": [
-                  "tenantId"
-                ]
-              }
-            }
-          }
-        },
-        "description": "List all users for a tenant"
-      },
-      "post": {
-        "summary": "",
-        "operationId": "post-api-v1-user",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "user": {
-                      "$ref": "#/components/schemas/User"
-                    }
-                  },
-                  "required": [
-                    "user"
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "errors": {
-                      "type": "object",
-                      "x-stoplight": {
-                        "id": "dfzx0jyq9c8xo"
-                      },
-                      "properties": {
-                        "name": {
-                          "type": "array",
-                          "x-stoplight": {
-                            "id": "j3zsuoc8t0q7u"
-                          },
-                          "items": {
-                            "x-stoplight": {
-                              "id": "pmv9t7brcgxyu"
-                            },
-                            "type": "string"
-                          }
-                        },
-                        "email": {
-                          "type": "array",
-                          "x-stoplight": {
-                            "id": "av599fh0o202w"
-                          },
-                          "items": {
-                            "x-stoplight": {
-                              "id": "ids4ofdt1ld36"
-                            },
-                            "type": "string"
-                          }
-                        },
-                        "role": {
-                          "type": "array",
-                          "x-stoplight": {
-                            "id": "71ytp6sf72ky8"
-                          },
-                          "items": {
-                            "x-stoplight": {
-                              "id": "yg90e9pet0ni8"
-                            },
-                            "type": "string"
-                          }
-                        },
-                        "tenantId": {
-                          "type": "array",
-                          "x-stoplight": {
-                            "id": "3mphvoecpeakf"
-                          },
-                          "items": {
-                            "x-stoplight": {
-                              "id": "xlpq0rfqz20t4"
-                            },
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "x-stoplight": {
-                      "id": "1v8qbrg0jx4zw"
-                    },
-                    "nullable": true
-                  },
-                  "email": {
-                    "type": "string",
-                    "x-stoplight": {
-                      "id": "zjajhqp7sqe4a"
-                    }
-                  },
-                  "role": {
-                    "type": "string",
-                    "x-stoplight": {
-                      "id": "y4fbd2ycskib0"
-                    }
-                  },
-                  "tenantId": {
-                    "type": "string",
-                    "x-stoplight": {
-                      "id": "zrprfck04dgnc"
-                    }
-                  }
-                },
-                "required": [
-                  "name",
-                  "email",
-                  "role",
-                  "tenantId"
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/user/{userId}": {
-      "parameters": [
-        {
-          "schema": {
-            "type": "string"
-          },
-          "name": "userId",
-          "in": "path",
-          "required": true
-        }
-      ],
-      "get": {
-        "summary": "Get User By ID",
-        "tags": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "user": {
-                      "$ref": "#/components/schemas/User"
-                    }
-                  },
-                  "required": [
-                    "user"
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "x-stoplight": {
-                        "id": "lpuagztd3hj4k"
-                      }
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "operationId": "get-api-v1-user-userId",
-        "description": "Gets a single user with their tenant",
-        "requestBody": {
-          "content": {}
-        }
-      }
-    }
-  },
   "components": {
     "schemas": {
-      "Tenant": {
-        "title": "Tenant",
-        "x-stoplight": {
-          "id": "epiao4thelgl8"
-        },
-        "type": "object",
-        "x-examples": {
-          "Tenant A": {
-            "id": "123",
-            "name": "Tenant A",
-            "shortCode": "ck01",
-            "createdAt": "2019-08-24T14:15:22Z",
-            "updatedAt": "2019-08-24T14:15:22Z"
-          }
-        },
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string",
-            "x-stoplight": {
-              "id": "n4o5nrsgidi10"
-            }
-          },
-          "shortCode": {
-            "type": "string",
-            "x-stoplight": {
-              "id": "27q7hpurw5ocp"
-            },
-            "minLength": 4,
-            "maxLength": 5
-          },
-          "createdAt": {
-            "type": "string",
-            "x-stoplight": {
-              "id": "07d77viz1ywfx"
-            },
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "x-stoplight": {
-              "id": "8b2akt1mr73fx"
-            },
-            "format": "date-time"
-          },
-          "userCount": {
-            "type": "integer",
-            "x-stoplight": {
-              "id": "s2ixidwypo49s"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "shortCode"
-        ]
-      },
-      "User": {
-        "title": "User",
-        "x-stoplight": {
-          "id": "l0luc1facl7qb"
-        },
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string",
-            "x-stoplight": {
-              "id": "jriy3rhjc0g65"
-            }
-          },
-          "email": {
-            "type": "string",
-            "x-stoplight": {
-              "id": "l48fbayrs7tqk"
-            }
-          },
-          "role": {
-            "type": "string",
-            "x-stoplight": {
-              "id": "lyqcau2sx1a09"
-            }
-          },
-          "tenant": {
-            "$ref": "#/components/schemas/Tenant"
-          }
-        },
-        "required": [
-          "id"
-        ]
-      },
       "Review": {
-        "title": "Review",
-        "x-stoplight": {
-          "id": "3kaex1bikht4k"
-        },
-        "type": "object",
         "properties": {
-          "id": {
+          "content": {
             "type": "string"
           },
-          "content": {
-            "type": "string",
-            "x-stoplight": {
-              "id": "1rlnxn0bnfthh"
-            }
+          "id": {
+            "type": "string"
           },
           "rating": {
-            "type": "integer",
-            "x-stoplight": {
-              "id": "bfimddts8djpk"
-            }
+            "type": "integer"
           },
           "user": {
             "$ref": "#/components/schemas/User"
@@ -570,88 +18,496 @@
         },
         "required": [
           "id"
-        ]
+        ],
+        "title": "Review",
+        "type": "object"
       },
-      "TenantCreateValidationError": {
-        "title": "TenantCreateValidationError",
-        "x-stoplight": {
-          "id": "53qk68hxal9f9"
-        },
-        "type": "object",
+      "Tenant": {
         "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
           "name": {
-            "type": "object",
-            "x-stoplight": {
-              "id": "p9l6sf63d2efi"
-            },
-            "properties": {
-              "required": {
-                "x-stoplight": {
-                  "id": "pfs12txxve9av"
-                },
-                "type": "string"
-              },
-              "minLen": {
-                "type": "string",
-                "x-stoplight": {
-                  "id": "jbzjbspvas6sq"
-                }
-              },
-              "maxLen": {
-                "type": "string",
-                "x-stoplight": {
-                  "id": "ce02w014alaz1"
-                }
-              },
-              "uniqueName": {
-                "type": "string",
-                "x-stoplight": {
-                  "id": "soynt1f95qjhl"
-                }
-              }
-            }
+            "type": "string"
           },
           "shortCode": {
-            "type": "object",
-            "x-stoplight": {
-              "id": "nma677kdhc2cm"
-            },
+            "maxLength": 5,
+            "minLength": 4,
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "userCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "shortCode"
+        ],
+        "title": "Tenant",
+        "type": "object",
+        "x-examples": {
+          "Tenant A": {
+            "createdAt": "2019-08-24T14:15:22Z",
+            "id": "123",
+            "name": "Tenant A",
+            "shortCode": "ck01",
+            "updatedAt": "2019-08-24T14:15:22Z"
+          }
+        }
+      },
+      "TenantCreateValidationError": {
+        "properties": {
+          "name": {
             "properties": {
-              "required": {
-                "x-stoplight": {
-                  "id": "2jjtejns65d3d"
-                },
+              "maxLen": {
                 "type": "string"
               },
               "minLen": {
-                "type": "string",
-                "x-stoplight": {
-                  "id": "mo01g7sobaiw0"
-                }
+                "type": "string"
+              },
+              "required": {
+                "type": "string"
+              },
+              "uniqueName": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "shortCode": {
+            "properties": {
+              "alphaNum": {
+                "type": "string"
               },
               "maxLen": {
-                "type": "string",
-                "x-stoplight": {
-                  "id": "x6ojgncdbzfwv"
-                }
+                "type": "string"
               },
-              "alphaNum": {
-                "type": "string",
-                "x-stoplight": {
-                  "id": "2tmmgo610z769"
-                }
+              "minLen": {
+                "type": "string"
+              },
+              "required": {
+                "type": "string"
               },
               "uniqueShortCode": {
-                "type": "string",
-                "x-stoplight": {
-                  "id": "w97px7jtig2f5"
-                }
+                "type": "string"
               }
-            }
+            },
+            "type": "object"
           }
-        }
+        },
+        "title": "TenantCreateValidationError",
+        "type": "object"
+      },
+      "User": {
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/Tenant"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "User",
+        "type": "object"
       }
     },
     "securitySchemes": {}
-  }
+  },
+  "info": {
+    "description": "Test API",
+    "title": "v1-3.0",
+    "version": "1.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/tenant": {
+      "get": {
+        "description": "List all tenants in the application",
+        "operationId": "get-api-v1-tenant",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "tenants": {
+                      "items": {
+                        "$ref": "#/components/schemas/Tenant"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "tenants"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": ""
+      },
+      "parameters": [],
+      "post": {
+        "description": "Creates a new tenant",
+        "operationId": "post-api-v1-tenant",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "shortCode": {
+                    "maxLength": 5,
+                    "minLength": 4,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "shortCode"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "tenant": {
+                      "$ref": "#/components/schemas/Tenant"
+                    }
+                  },
+                  "required": [
+                    "tenant"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TenantCreateValidationError"
+                    },
+                    "errorCode": {
+                      "type": "string"
+                    },
+                    "errorMessage": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "errorCode",
+                    "errorMessage",
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "summary": ""
+      }
+    },
+    "/api/v1/tenant/{tenantId}": {
+      "get": {
+        "description": "Get details for 1 tenant",
+        "operationId": "get-api-v1-tenant-tenantId",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "tenant": {
+                      "$ref": "#/components/schemas/Tenant"
+                    }
+                  },
+                  "required": [
+                    "tenant"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        },
+        "summary": "Get Tenant By ID",
+        "tags": []
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "tenantId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/api/v1/user": {
+      "get": {
+        "description": "List all users for a tenant",
+        "operationId": "get-api-v1-user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "tenantId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "tenantId"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "users": {
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "users"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get all users",
+        "tags": []
+      },
+      "post": {
+        "operationId": "post-api-v1-user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string"
+                  },
+                  "tenantId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "role",
+                  "tenantId"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "errors": {
+                      "properties": {
+                        "email": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "name": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "role": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "tenantId": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "summary": ""
+      }
+    },
+    "/api/v1/user/{userId}": {
+      "get": {
+        "description": "Gets a single user with their tenant",
+        "operationId": "get-api-v1-user-userId",
+        "requestBody": {
+          "content": {}
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not Found"
+          }
+        },
+        "summary": "Get User By ID",
+        "tags": []
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "userId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ]
 }
