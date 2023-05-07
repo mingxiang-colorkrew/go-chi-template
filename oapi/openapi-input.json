@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "x-stoplight": {
-    "id": "itbrpnesv8cwz"
+    "id": "9kpvvb1zm7l91"
   },
   "info": {
     "title": "v1-3.0",
@@ -47,19 +47,24 @@
                     "errorCode": {
                       "type": "string",
                       "x-stoplight": {
-                        "id": "rllkwwmo77ycn"
+                        "id": "y5jyvpx67xkm6"
                       }
                     },
                     "errorMessage": {
                       "type": "string",
                       "x-stoplight": {
-                        "id": "318rxk5s2c7f8"
+                        "id": "a8gx3vf1ngax5"
                       }
                     },
                     "data": {
                       "$ref": "#/components/schemas/TenantCreateValidationError"
                     }
-                  }
+                  },
+                  "required": [
+                    "errorCode",
+                    "errorMessage",
+                    "data"
+                  ]
                 }
               }
             }
@@ -75,13 +80,13 @@
                   "name": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "l640ydkl5vi2l"
+                      "id": "pmzim9yddimtv"
                     }
                   },
                   "shortCode": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "qbns5l6tvjzmv"
+                      "id": "aocf94ap0u7t0"
                     },
                     "minLength": 4,
                     "maxLength": 5
@@ -111,7 +116,7 @@
                     "tenants": {
                       "type": "array",
                       "x-stoplight": {
-                        "id": "abxq0cdwy04ay"
+                        "id": "n8tz67d0yoxsm"
                       },
                       "items": {
                         "$ref": "#/components/schemas/Tenant"
@@ -172,7 +177,7 @@
                     "message": {
                       "type": "string",
                       "x-stoplight": {
-                        "id": "8eri3zah5eveq"
+                        "id": "lbdk2x0b3fgl1"
                       }
                     }
                   },
@@ -203,7 +208,7 @@
                     "users": {
                       "type": "array",
                       "x-stoplight": {
-                        "id": "no1eber5t0mk1"
+                        "id": "0wnnvvcfoijy3"
                       },
                       "items": {
                         "$ref": "#/components/schemas/User"
@@ -228,7 +233,7 @@
                   "tenantId": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "dxk6govsvrnvs"
+                      "id": "1iwlwvgn0wc7x"
                     }
                   }
                 },
@@ -273,17 +278,17 @@
                     "errors": {
                       "type": "object",
                       "x-stoplight": {
-                        "id": "53na03s5sgohk"
+                        "id": "dfzx0jyq9c8xo"
                       },
                       "properties": {
                         "name": {
                           "type": "array",
                           "x-stoplight": {
-                            "id": "plfj5dibl189i"
+                            "id": "j3zsuoc8t0q7u"
                           },
                           "items": {
                             "x-stoplight": {
-                              "id": "n6luib2o3uu3e"
+                              "id": "pmv9t7brcgxyu"
                             },
                             "type": "string"
                           }
@@ -291,11 +296,11 @@
                         "email": {
                           "type": "array",
                           "x-stoplight": {
-                            "id": "j1tkyzwzidcji"
+                            "id": "av599fh0o202w"
                           },
                           "items": {
                             "x-stoplight": {
-                              "id": "16036ktjfxps2"
+                              "id": "ids4ofdt1ld36"
                             },
                             "type": "string"
                           }
@@ -303,11 +308,11 @@
                         "role": {
                           "type": "array",
                           "x-stoplight": {
-                            "id": "0ok9j36cw28n7"
+                            "id": "71ytp6sf72ky8"
                           },
                           "items": {
                             "x-stoplight": {
-                              "id": "j27jtn8yqcp4t"
+                              "id": "yg90e9pet0ni8"
                             },
                             "type": "string"
                           }
@@ -315,11 +320,11 @@
                         "tenantId": {
                           "type": "array",
                           "x-stoplight": {
-                            "id": "rims4uzr73il3"
+                            "id": "3mphvoecpeakf"
                           },
                           "items": {
                             "x-stoplight": {
-                              "id": "rfruzjxt6jwde"
+                              "id": "xlpq0rfqz20t4"
                             },
                             "type": "string"
                           }
@@ -341,26 +346,26 @@
                   "name": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "ql35fy8fab36q"
+                      "id": "1v8qbrg0jx4zw"
                     },
                     "nullable": true
                   },
                   "email": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "kkqgedndn8gxm"
+                      "id": "zjajhqp7sqe4a"
                     }
                   },
                   "role": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "2nmfgn72yam4r"
+                      "id": "y4fbd2ycskib0"
                     }
                   },
                   "tenantId": {
                     "type": "string",
                     "x-stoplight": {
-                      "id": "4jtp1ds0qzomc"
+                      "id": "zrprfck04dgnc"
                     }
                   }
                 },
@@ -419,7 +424,7 @@
                     "message": {
                       "type": "string",
                       "x-stoplight": {
-                        "id": "eae66flzsrrmi"
+                        "id": "lpuagztd3hj4k"
                       }
                     }
                   },
@@ -444,7 +449,7 @@
       "Tenant": {
         "title": "Tenant",
         "x-stoplight": {
-          "id": "ll8gjytmdcflr"
+          "id": "epiao4thelgl8"
         },
         "type": "object",
         "x-examples": {
@@ -463,13 +468,13 @@
           "name": {
             "type": "string",
             "x-stoplight": {
-              "id": "p6mta5h4inbga"
+              "id": "n4o5nrsgidi10"
             }
           },
           "shortCode": {
             "type": "string",
             "x-stoplight": {
-              "id": "bk29f93ygkv6w"
+              "id": "27q7hpurw5ocp"
             },
             "minLength": 4,
             "maxLength": 5
@@ -477,21 +482,21 @@
           "createdAt": {
             "type": "string",
             "x-stoplight": {
-              "id": "zajfcu1d17uw5"
+              "id": "07d77viz1ywfx"
             },
             "format": "date-time"
           },
           "updatedAt": {
             "type": "string",
             "x-stoplight": {
-              "id": "4muy39fu375yx"
+              "id": "8b2akt1mr73fx"
             },
             "format": "date-time"
           },
           "userCount": {
             "type": "integer",
             "x-stoplight": {
-              "id": "1d5ce65ef24qj"
+              "id": "s2ixidwypo49s"
             }
           }
         },
@@ -504,7 +509,7 @@
       "User": {
         "title": "User",
         "x-stoplight": {
-          "id": "ylasvjugjbegz"
+          "id": "l0luc1facl7qb"
         },
         "type": "object",
         "properties": {
@@ -514,19 +519,19 @@
           "name": {
             "type": "string",
             "x-stoplight": {
-              "id": "5fsjcj7kpjcmm"
+              "id": "jriy3rhjc0g65"
             }
           },
           "email": {
             "type": "string",
             "x-stoplight": {
-              "id": "83jqzxar9lvns"
+              "id": "l48fbayrs7tqk"
             }
           },
           "role": {
             "type": "string",
             "x-stoplight": {
-              "id": "jsh6vgwiwtkuh"
+              "id": "lyqcau2sx1a09"
             }
           },
           "tenant": {
@@ -540,7 +545,7 @@
       "Review": {
         "title": "Review",
         "x-stoplight": {
-          "id": "aqwr3p1nd7pdt"
+          "id": "3kaex1bikht4k"
         },
         "type": "object",
         "properties": {
@@ -550,13 +555,13 @@
           "content": {
             "type": "string",
             "x-stoplight": {
-              "id": "y0uo4gcb85gi3"
+              "id": "1rlnxn0bnfthh"
             }
           },
           "rating": {
             "type": "integer",
             "x-stoplight": {
-              "id": "evvg5xq9oveap"
+              "id": "bfimddts8djpk"
             }
           },
           "user": {
@@ -570,32 +575,78 @@
       "TenantCreateValidationError": {
         "title": "TenantCreateValidationError",
         "x-stoplight": {
-          "id": "wj55zse6ktb2j"
+          "id": "53qk68hxal9f9"
         },
         "type": "object",
         "properties": {
           "name": {
-            "type": "array",
+            "type": "object",
             "x-stoplight": {
-              "id": "47q77sax5wx82"
+              "id": "p9l6sf63d2efi"
             },
-            "items": {
-              "x-stoplight": {
-                "id": "ovtovv01ysar3"
+            "properties": {
+              "required": {
+                "x-stoplight": {
+                  "id": "pfs12txxve9av"
+                },
+                "type": "string"
               },
-              "type": "string"
+              "minLen": {
+                "type": "string",
+                "x-stoplight": {
+                  "id": "jbzjbspvas6sq"
+                }
+              },
+              "maxLen": {
+                "type": "string",
+                "x-stoplight": {
+                  "id": "ce02w014alaz1"
+                }
+              },
+              "uniqueName": {
+                "type": "string",
+                "x-stoplight": {
+                  "id": "soynt1f95qjhl"
+                }
+              }
             }
           },
           "shortCode": {
-            "type": "array",
+            "type": "object",
             "x-stoplight": {
-              "id": "0aerw9z56n4g0"
+              "id": "nma677kdhc2cm"
             },
-            "items": {
-              "x-stoplight": {
-                "id": "248xkq2zwe1dw"
+            "properties": {
+              "required": {
+                "x-stoplight": {
+                  "id": "2jjtejns65d3d"
+                },
+                "type": "string"
               },
-              "type": "string"
+              "minLen": {
+                "type": "string",
+                "x-stoplight": {
+                  "id": "mo01g7sobaiw0"
+                }
+              },
+              "maxLen": {
+                "type": "string",
+                "x-stoplight": {
+                  "id": "x6ojgncdbzfwv"
+                }
+              },
+              "alphaNum": {
+                "type": "string",
+                "x-stoplight": {
+                  "id": "2tmmgo610z769"
+                }
+              },
+              "uniqueShortCode": {
+                "type": "string",
+                "x-stoplight": {
+                  "id": "w97px7jtig2f5"
+                }
+              }
             }
           }
         }
@@ -604,4 +655,3 @@
     "securitySchemes": {}
   }
 }
-

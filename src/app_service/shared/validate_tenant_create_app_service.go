@@ -1,38 +1,65 @@
 package shared
 
 import (
+	"encoding/json"
 	"measure/config"
 	"measure/oapi"
+	"measure/src/enum"
+	"measure/src/repository/single"
 
-	"github.com/asaskevich/govalidator"
+	"github.com/gookit/validate"
 )
 
 func ValidateTenantCreateAppService(
 	app *config.App,
-	p *oapi.PostApiV1TenantJSONRequestBody,
+	payload *oapi.PostApiV1TenantJSONRequestBody,
 ) (*oapi.PostApiV1Tenant400JSONResponse, error) {
-	errData := oapi.TenantCreateValidationError{}
+	v := validate.Struct(payload)
 
-	var nameErrs []string
-	var shortCodeErrs []string
+  // add custom validators unique to this app service
+	v.AddValidator("uniqueName", func(val interface{}) bool {
+		existingTenant, _ := single.GetTenantByName(app, payload.Name)
+		return existingTenant == nil
+	})
+	v.AddValidator("uniqueShortCode", func(val interface{}) bool {
+		existingTenant, _ := single.GetTenantByShortCode(app, payload.ShortCode)
+		return existingTenant == nil
+	})
+	v.AddMessages(map[string]string{
+		"uniqueName": "Another tenant with this name already exists",
+		"uniqueShortCode": "Another tenant with this short code already exists",
+	})
 
-	if !govalidator.StringLength(p.Name, "1", "255") {
-		nameErrs = append(nameErrs, "validate.name:1,255")
-	}
+  // add rules for validation
+  // can use struct field names or JSON name, but prefer JSON names
+	v.AddRule("name", "required")
+	v.AddRule("name", "minLen", 1)
+	v.AddRule("name", "maxLen", 255)
+	v.AddRule("name", "uniqueName")
 
-	if !govalidator.StringLength(p.ShortCode, "4", "5") {
-		shortCodeErrs = append(shortCodeErrs, "validate.short_code:4,5")
-	}
+	v.AddRule("shortCode", "required")
+	v.AddRule("shortCode", "minLen", 4)
+	v.AddRule("shortCode", "maxLen", 5)
+	v.AddRule("shortCode", "alphaNum")
+	v.AddRule("shortCode", "uniqueShortCode")
 
-	errData.Name = &nameErrs
-	errData.ShortCode = &nameErrs
+	if v.Validate() {
+		return nil, nil
+	} else {
+    // convert errors from map into OpenAPI struct
+    // non-present errors will be omitted or retained depending on OpenAPI spec
+		errJson, _ := json.Marshal(v.Errors.All())
 
-	if hasNotNilField(&errData) {
-		errResp := oapi.PostApiV1Tenant400JSONResponse{}
-		errResp.Data = &errData
+		var errDto oapi.TenantCreateValidationError
+		json.Unmarshal(errJson, &errDto)
+
+		errorEnum := enum.ValidationFailedErrorEnum()
+		errResp := oapi.PostApiV1Tenant400JSONResponse{
+			ErrorCode:    errorEnum.Code,
+			ErrorMessage: errorEnum.Message,
+			Data:         errDto,
+		}
 
 		return &errResp, nil
 	}
-
-	return nil, nil
 }

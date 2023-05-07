@@ -35,6 +35,7 @@ func NewApp() *App {
 	app.setRootDir()
 	app.setEnv()
 	app.setupDb()
+	setupGlobalValidation()
 
 	return &app
 }

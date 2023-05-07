@@ -30,8 +30,19 @@ type Tenant struct {
 
 // TenantCreateValidationError defines model for TenantCreateValidationError.
 type TenantCreateValidationError struct {
-	Name      *[]string `json:"name,omitempty"`
-	ShortCode *[]string `json:"shortCode,omitempty"`
+	Name *struct {
+		MaxLen     *string `json:"maxLen,omitempty"`
+		MinLen     *string `json:"minLen,omitempty"`
+		Required   *string `json:"required,omitempty"`
+		UniqueName *string `json:"uniqueName,omitempty"`
+	} `json:"name,omitempty"`
+	ShortCode *struct {
+		AlphaNum        *string `json:"alphaNum,omitempty"`
+		MaxLen          *string `json:"maxLen,omitempty"`
+		MinLen          *string `json:"minLen,omitempty"`
+		Required        *string `json:"required,omitempty"`
+		UniqueShortCode *string `json:"uniqueShortCode,omitempty"`
+	} `json:"shortCode,omitempty"`
 }
 
 // User defines model for User.
@@ -593,9 +604,9 @@ type PostApiV1TenantResponse struct {
 		Tenant Tenant `json:"tenant"`
 	}
 	JSON400 *struct {
-		Data         *TenantCreateValidationError `json:"data,omitempty"`
-		ErrorCode    *string                      `json:"errorCode,omitempty"`
-		ErrorMessage *string                      `json:"errorMessage,omitempty"`
+		Data         TenantCreateValidationError `json:"data"`
+		ErrorCode    string                      `json:"errorCode"`
+		ErrorMessage string                      `json:"errorMessage"`
 	}
 }
 
@@ -856,9 +867,9 @@ func ParsePostApiV1TenantResponse(rsp *http.Response) (*PostApiV1TenantResponse,
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest struct {
-			Data         *TenantCreateValidationError `json:"data,omitempty"`
-			ErrorCode    *string                      `json:"errorCode,omitempty"`
-			ErrorMessage *string                      `json:"errorMessage,omitempty"`
+			Data         TenantCreateValidationError `json:"data"`
+			ErrorCode    string                      `json:"errorCode"`
+			ErrorMessage string                      `json:"errorMessage"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -1022,16 +1033,16 @@ type ServerInterface interface {
 
 	// (POST /api/v1/tenant)
 	PostApiV1Tenant(w http.ResponseWriter, r *http.Request)
-	// Your GET endpoint
+	// Get Tenant By ID
 	// (GET /api/v1/tenant/{tenantId})
 	GetApiV1TenantTenantId(w http.ResponseWriter, r *http.Request, tenantId string)
-	// Your GET endpoint
+	// Get all users
 	// (GET /api/v1/user)
 	GetApiV1User(w http.ResponseWriter, r *http.Request)
 
 	// (POST /api/v1/user)
 	PostApiV1User(w http.ResponseWriter, r *http.Request)
-	// Your GET endpoint
+	// Get User By ID
 	// (GET /api/v1/user/{userId})
 	GetApiV1UserUserId(w http.ResponseWriter, r *http.Request, userId string)
 }
@@ -1330,9 +1341,9 @@ func (response PostApiV1Tenant200JSONResponse) VisitPostApiV1TenantResponse(w ht
 }
 
 type PostApiV1Tenant400JSONResponse struct {
-	Data         *TenantCreateValidationError `json:"data,omitempty"`
-	ErrorCode    *string                      `json:"errorCode,omitempty"`
-	ErrorMessage *string                      `json:"errorMessage,omitempty"`
+	Data         TenantCreateValidationError `json:"data"`
+	ErrorCode    string                      `json:"errorCode"`
+	ErrorMessage string                      `json:"errorMessage"`
 }
 
 func (response PostApiV1Tenant400JSONResponse) VisitPostApiV1TenantResponse(w http.ResponseWriter) error {
@@ -1464,16 +1475,16 @@ type StrictServerInterface interface {
 
 	// (POST /api/v1/tenant)
 	PostApiV1Tenant(ctx context.Context, request PostApiV1TenantRequestObject) (PostApiV1TenantResponseObject, error)
-	// Your GET endpoint
+	// Get Tenant By ID
 	// (GET /api/v1/tenant/{tenantId})
 	GetApiV1TenantTenantId(ctx context.Context, request GetApiV1TenantTenantIdRequestObject) (GetApiV1TenantTenantIdResponseObject, error)
-	// Your GET endpoint
+	// Get all users
 	// (GET /api/v1/user)
 	GetApiV1User(ctx context.Context, request GetApiV1UserRequestObject) (GetApiV1UserResponseObject, error)
 
 	// (POST /api/v1/user)
 	PostApiV1User(ctx context.Context, request PostApiV1UserRequestObject) (PostApiV1UserResponseObject, error)
-	// Your GET endpoint
+	// Get User By ID
 	// (GET /api/v1/user/{userId})
 	GetApiV1UserUserId(ctx context.Context, request GetApiV1UserUserIdRequestObject) (GetApiV1UserUserIdResponseObject, error)
 }
