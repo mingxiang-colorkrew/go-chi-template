@@ -18,6 +18,13 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// Defines values for PostApiV1UserJSONBodyRole.
+const (
+	Admin  PostApiV1UserJSONBodyRole = "admin"
+	Normal PostApiV1UserJSONBodyRole = "normal"
+	Super  PostApiV1UserJSONBodyRole = "super"
+)
+
 // Tenant defines model for Tenant.
 type Tenant struct {
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
@@ -54,6 +61,26 @@ type User struct {
 	Tenant *Tenant `json:"tenant,omitempty"`
 }
 
+// UserCreateValidationError defines model for UserCreateValidationError.
+type UserCreateValidationError struct {
+	Email *struct {
+		Email    *string `json:"email,omitempty"`
+		MaxLen   *string `json:"maxLen,omitempty"`
+		Required *string `json:"required,omitempty"`
+	} `json:"email,omitempty"`
+	Name *struct {
+		MaxLen   *string `json:"maxLen,omitempty"`
+		MinLen   *string `json:"minLen,omitempty"`
+		Required *string `json:"required,omitempty"`
+	} `json:"name,omitempty"`
+	Role *struct {
+		InvalidRole *string `json:"invalidRole,omitempty"`
+	} `json:"role,omitempty"`
+	TenantId *struct {
+		TenantExists *string `json:"tenantExists,omitempty"`
+	} `json:"tenantId,omitempty"`
+}
+
 // PostApiV1TenantJSONBody defines parameters for PostApiV1Tenant.
 type PostApiV1TenantJSONBody struct {
 	Name      string `json:"name"`
@@ -67,11 +94,14 @@ type GetApiV1UserJSONBody struct {
 
 // PostApiV1UserJSONBody defines parameters for PostApiV1User.
 type PostApiV1UserJSONBody struct {
-	Email    string  `json:"email"`
-	Name     *string `json:"name"`
-	Role     string  `json:"role"`
-	TenantId string  `json:"tenantId"`
+	Email    string                    `json:"email"`
+	Name     *string                   `json:"name"`
+	Role     PostApiV1UserJSONBodyRole `json:"role"`
+	TenantId string                    `json:"tenantId"`
 }
+
+// PostApiV1UserJSONBodyRole defines parameters for PostApiV1User.
+type PostApiV1UserJSONBodyRole string
 
 // PostApiV1TenantJSONRequestBody defines body for PostApiV1Tenant for application/json ContentType.
 type PostApiV1TenantJSONRequestBody PostApiV1TenantJSONBody
@@ -684,12 +714,9 @@ type PostApiV1UserResponse struct {
 		User User `json:"user"`
 	}
 	JSON400 *struct {
-		Errors *struct {
-			Email    *[]string `json:"email,omitempty"`
-			Name     *[]string `json:"name,omitempty"`
-			Role     *[]string `json:"role,omitempty"`
-			TenantId *[]string `json:"tenantId,omitempty"`
-		} `json:"errors,omitempty"`
+		Data         UserCreateValidationError `json:"data"`
+		ErrorCode    string                    `json:"errorCode"`
+		ErrorMessage string                    `json:"errorMessage"`
 	}
 }
 
@@ -971,12 +998,9 @@ func ParsePostApiV1UserResponse(rsp *http.Response) (*PostApiV1UserResponse, err
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest struct {
-			Errors *struct {
-				Email    *[]string `json:"email,omitempty"`
-				Name     *[]string `json:"name,omitempty"`
-				Role     *[]string `json:"role,omitempty"`
-				TenantId *[]string `json:"tenantId,omitempty"`
-			} `json:"errors,omitempty"`
+			Data         UserCreateValidationError `json:"data"`
+			ErrorCode    string                    `json:"errorCode"`
+			ErrorMessage string                    `json:"errorMessage"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -1422,12 +1446,9 @@ func (response PostApiV1User200JSONResponse) VisitPostApiV1UserResponse(w http.R
 }
 
 type PostApiV1User400JSONResponse struct {
-	Errors *struct {
-		Email    *[]string `json:"email,omitempty"`
-		Name     *[]string `json:"name,omitempty"`
-		Role     *[]string `json:"role,omitempty"`
-		TenantId *[]string `json:"tenantId,omitempty"`
-	} `json:"errors,omitempty"`
+	Data         UserCreateValidationError `json:"data"`
+	ErrorCode    string                    `json:"errorCode"`
+	ErrorMessage string                    `json:"errorMessage"`
 }
 
 func (response PostApiV1User400JSONResponse) VisitPostApiV1UserResponse(w http.ResponseWriter) error {

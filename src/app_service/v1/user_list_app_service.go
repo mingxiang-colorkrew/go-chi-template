@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func ListUserAppService(
+func UserListAppService(
 	app *config.App,
 	req oapi.GetApiV1UserRequestObject,
 ) (oapi.GetApiV1UserResponseObject, error) {
@@ -26,8 +26,7 @@ func ListUserAppService(
 		userDtos = append(userDtos, userDto)
 	}
 
-	return oapi.GetApiV1User200JSONResponse{
+	return &oapi.GetApiV1User200JSONResponse{
 		Users: userDtos,
 	}, nil
-
 }

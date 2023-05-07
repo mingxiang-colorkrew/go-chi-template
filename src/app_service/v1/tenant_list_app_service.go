@@ -14,6 +14,7 @@ func TenantListAppService(
 	tenants, _ := multi.GetTenantsWithUserCount(app)
 
 	tenantDtos := []oapi.Tenant{}
+
 	for _, tenant := range tenants {
 		tenantDto := oapi.Tenant{
 			Id:        strconv.FormatInt(tenant.ID, 10),

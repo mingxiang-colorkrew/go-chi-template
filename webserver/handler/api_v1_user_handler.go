@@ -3,29 +3,37 @@ package handler
 import (
 	"context"
 	"measure/oapi"
+	"measure/src/app_service/shared"
 	v1 "measure/src/app_service/v1"
 )
 
-func (handler *Handler) PostApiV1User(
+func (h *Handler) PostApiV1User(
 	ctx context.Context,
 	request oapi.PostApiV1UserRequestObject,
 ) (oapi.PostApiV1UserResponseObject, error) {
-	resp, err := v1.CreateUserAppService(handler.app, request)
+	errResp, err := shared.ValidateUserCreateAppService(h.app, request.Body)
+
+	if errResp != nil {
+		return errResp, err
+	}
+
+  resp, err := v1.UserCreateAppService(h.app, request)
+
 	return resp, err
 }
 
-func (handler *Handler) GetApiV1User(
+func (h *Handler) GetApiV1User(
 	ctx context.Context,
 	request oapi.GetApiV1UserRequestObject,
 ) (oapi.GetApiV1UserResponseObject, error) {
-	resp, err := v1.ListUserAppService(handler.app, request)
+	resp, err := v1.UserListAppService(h.app, request)
 	return resp, err
 }
 
-func (handler *Handler) GetApiV1UserUserId(
+func (h *Handler) GetApiV1UserUserId(
 	ctx context.Context,
 	request oapi.GetApiV1UserUserIdRequestObject,
 ) (oapi.GetApiV1UserUserIdResponseObject, error) {
-	resp, err := v1.DetailUserAppService(handler.app, request)
+	resp, err := v1.UserDetailAppService(h.app, request)
 	return resp, err
 }

@@ -32,8 +32,8 @@ case "$1" in
     exit 0
     ;;
   "openapi:codegen")
-    echo 'Generating OpenAPI client/server code from oapi/openapi-input.json';
-    oapi-codegen -config oapi/codegen.yaml oapi/openapi-input.json
+    echo 'Generating OpenAPI client/server code from ./openapi.yaml';
+    oapi-codegen -config oapi/codegen.yaml ./openapi.yaml
     echo 'Finished generating openapi code';
     exit 0
     ;;
