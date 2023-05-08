@@ -16,8 +16,8 @@ func ValidateTenantCreateAppService(
 ) (*oapi.PostApiV1Tenant400JSONResponse, error) {
 	v := validate.Struct(payload)
 
-  // add custom validators unique to this app service
-  // require app so we can access the DB and perform DB validations
+	// add custom validators unique to this app service
+	// require app so we can access the DB and perform DB validations
 	v.AddValidator("uniqueName", func(val interface{}) bool {
 		existingTenant, _ := single.GetTenantByName(app, payload.Name)
 		return existingTenant == nil
@@ -27,13 +27,13 @@ func ValidateTenantCreateAppService(
 		return existingTenant == nil
 	})
 	v.AddMessages(map[string]string{
-		"uniqueName": "Another tenant with this name already exists",
+		"uniqueName":      "Another tenant with this name already exists",
 		"uniqueShortCode": "Another tenant with this short code already exists",
 	})
 
-  // add rules for validation
-  // can use struct field names or JSON name, but prefer JSON names
-  // struct validation is possible but avoided because our structs are generated from OpenAPI
+	// add rules for validation
+	// can use struct field names or JSON name, but prefer JSON names
+	// struct validation is possible but avoided because our structs are generated from OpenAPI
 	v.AddRule("name", "required")
 	v.AddRule("name", "minLen", 1)
 	v.AddRule("name", "maxLen", 255)
@@ -48,12 +48,12 @@ func ValidateTenantCreateAppService(
 	if v.Validate() {
 		return nil, nil
 	} else {
-    // convert errors from map into OpenAPI struct
-    // non-present errors will be omitted or retained depending on OpenAPI spec
+		// convert errors from map into OpenAPI struct
+		// non-present errors will be omitted or retained depending on OpenAPI spec
 		errJson, _ := json.Marshal(v.Errors.All())
 
 		var errDto oapi.TenantCreateValidationError
-    json.Unmarshal(errJson, &errDto)
+		json.Unmarshal(errJson, &errDto)
 
 		errorEnum := enum.ValidationFailedErrorEnum()
 		errResp := oapi.PostApiV1Tenant400JSONResponse{

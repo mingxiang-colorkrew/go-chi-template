@@ -21,9 +21,9 @@ func TenantDetailAppService(
 		ShortCode: tenant.ShortCode,
 	}
 
-  respDto := oapi.GetApiV1TenantTenantId200JSONResponse{
+	respDto := oapi.GetApiV1TenantTenantId200JSONResponse{
 		Tenant: tenantDto,
 	}
 
-  return &respDto, nil
+	return &respDto, nil
 }

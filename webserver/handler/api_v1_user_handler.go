@@ -17,7 +17,7 @@ func (h *Handler) PostApiV1User(
 		return errResp, err
 	}
 
-  resp, err := v1.UserCreateAppService(h.app, request)
+	resp, err := v1.UserCreateAppService(h.app, request)
 
 	return resp, err
 }

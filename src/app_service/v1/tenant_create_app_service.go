@@ -6,6 +6,8 @@ import (
 	"measure/oapi"
 	domainservice "measure/src/domain_service"
 	"measure/src/mutation"
+
+	"go.uber.org/zap"
 )
 
 func TenantCreateAppService(
@@ -16,6 +18,12 @@ func TenantCreateAppService(
 	insertedTenant, insertErr := mutation.InsertTenant(app, newTenant)
 
 	if insertErr != nil {
+		app.Logger().With(
+			zap.String("message", "insert tenant failed"),
+			zap.String("name", req.Body.Name),
+			zap.String("shortCode", req.Body.ShortCode),
+		)
+
 		return nil, insertErr
 	}
 

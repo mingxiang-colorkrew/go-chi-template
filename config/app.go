@@ -4,12 +4,15 @@ import (
 	"database/sql"
 	"path"
 	"runtime"
+
+	"go.uber.org/zap"
 )
 
 type App struct {
 	env     *EnvProvider
 	db      *sql.DB
 	rootDir string
+	logger  *zap.Logger
 }
 
 func (app *App) EnvVars() *EnvProvider {
@@ -18,6 +21,10 @@ func (app *App) EnvVars() *EnvProvider {
 
 func (app *App) DB() *sql.DB {
 	return app.db
+}
+
+func (app *App) Logger() *zap.Logger {
+	return app.logger
 }
 
 func (app *App) setEnv() {

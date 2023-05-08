@@ -22,7 +22,7 @@ func ValidateUserCreateAppService(
 		return existingUser == nil
 	})
 	v.AddValidator("tenantExists", func(val interface{}) bool {
-    tenantId, _ := strconv.ParseInt(payload.TenantId, 10, 64)
+		tenantId, _ := strconv.ParseInt(payload.TenantId, 10, 64)
 		existingTenant, _ := single.GetTenantById(app, tenantId)
 		return existingTenant == nil
 	})
@@ -39,17 +39,17 @@ func ValidateUserCreateAppService(
 	v.AddRule("email", "email")
 	v.AddRule("email", "uniqueEmail")
 
-  v.AddRule("tenantId", "tenantExists")
+	v.AddRule("tenantId", "tenantExists")
 
 	if v.Validate() {
 		return nil, nil
 	} else {
-    // convert errors from map into OpenAPI struct
-    // non-present errors will be omitted or retained depending on OpenAPI spec
+		// convert errors from map into OpenAPI struct
+		// non-present errors will be omitted or retained depending on OpenAPI spec
 		errJson, _ := json.Marshal(v.Errors.All())
 
 		var errDto oapi.UserCreateValidationError
-    json.Unmarshal(errJson, &errDto)
+		json.Unmarshal(errJson, &errDto)
 
 		errorEnum := enum.ValidationFailedErrorEnum()
 		errResp := oapi.PostApiV1User400JSONResponse{

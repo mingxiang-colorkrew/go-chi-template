@@ -28,5 +28,5 @@ func UserCreateAppService(
 		Role:  &role,
 	}
 
-	return &oapi.PostApiV1User200JSONResponse{User: userDto}, insertErr 
+	return &oapi.PostApiV1User200JSONResponse{User: userDto}, insertErr
 }

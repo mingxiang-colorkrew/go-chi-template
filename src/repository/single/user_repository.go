@@ -10,7 +10,11 @@ import (
 
 func GetUserByEmail(app *config.App, email string) (*model.User, error) {
 	tbl := table.User
-	stmt := SELECT(tbl.AllColumns).FROM(tbl).WHERE(LOWER(tbl.Email).EQ(LOWER(String(email)))).LIMIT(1)
+	stmt := SELECT(
+		tbl.AllColumns,
+	).FROM(tbl).
+		WHERE(LOWER(tbl.Email).EQ(LOWER(String(email)))).
+		LIMIT(1)
 
 	rows := []model.User{}
 	err := stmt.Query(app.DB(), &rows)

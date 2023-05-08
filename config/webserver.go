@@ -5,10 +5,11 @@ import (
 	"log"
 	"measure/oapi"
 	"net/http"
+	"time"
 
-	"github.com/go-chi/chi/v5/middleware"
-
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 )
 
 type Webserver struct {
@@ -17,11 +18,33 @@ type Webserver struct {
 	app        *App
 }
 
+func setupLoggerMiddleware(l *zap.Logger) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+			t1 := time.Now()
+			defer func() {
+				reqLogger := l.With(
+					zap.String("proto", r.Proto),
+					zap.String("path", r.URL.Path),
+					zap.String("reqId", middleware.GetReqID(r.Context())),
+					zap.Duration("lat", time.Since(t1)),
+					zap.Int("status", ww.Status()),
+					zap.Int("size", ww.BytesWritten()),
+				)
+				reqLogger.Info("Served")
+			}()
+			next.ServeHTTP(ww, r)
+		}
+		return http.HandlerFunc(fn)
+	}
+}
+
 func NewWebserver(app *App, handler oapi.StrictServerInterface) *Webserver {
 	serverAddr := ":" + app.EnvVars().ServerPort()
 
 	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+	r.Use(setupLoggerMiddleware(app.Logger()))
 
 	baseUrl := ""
 	strictHandler := oapi.NewStrictHandler(handler, []oapi.StrictMiddlewareFunc{})
