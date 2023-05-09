@@ -1,4 +1,4 @@
-package config
+package provider
 
 import (
 	"database/sql"
@@ -7,12 +7,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func (app *App) setupDb() {
-	db, error := sql.Open("postgres", app.env.databaseUrl)
+func NewDbProvider(dbUrl string) *sql.DB {
+	db, error := sql.Open("postgres", dbUrl)
 
 	if error != nil {
 		log.Fatal("Unable to connect to database")
 	}
 
-	app.db = db
+  return db
 }

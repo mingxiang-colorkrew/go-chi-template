@@ -1,8 +1,8 @@
-package config
+package provider
 
 import "github.com/gookit/validate"
 
-func setupGlobalValidation() {
+func NewValidationProvider() {
 	validate.Config(func(opt *validate.GlobalOption) {
 		opt.StopOnError = false
 		opt.SkipOnEmpty = false

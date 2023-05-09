@@ -1,4 +1,4 @@
-package config
+package provider
 
 import "os"
 
@@ -14,6 +14,10 @@ func (e *EnvProvider) AppEnv() string {
 
 func (e *EnvProvider) ServerPort() string {
 	return e.serverPort
+}
+
+func (e *EnvProvider) DatabaseUrl() string {
+	return e.databaseUrl
 }
 
 func NewEnvProvider(rootDir string) *EnvProvider {

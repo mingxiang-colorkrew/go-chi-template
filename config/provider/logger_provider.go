@@ -1,8 +1,8 @@
-package config
+package provider
 
 import "go.uber.org/zap"
 
-func (app *App) setupLogger() *zap.Logger {
+func NewLoggerProvider() *zap.Logger {
 	logger, _ := zap.NewProduction()
 
 	defer logger.Sync()
