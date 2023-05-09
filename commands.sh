@@ -11,9 +11,10 @@ cli_help() {
   --env={env} migration:run                       Runs migrations and autogenerates DB models
   --env={env} routes:list                         Lists all registered routes
 
-  migration:create {migration_name}   Create a new migration
-  openapi:codegen                     Autogenerates OpenAPI Client/Server code 
-  format                              Formats output 
+  migration:create {migration_name}               Create a new migration
+  openapi:codegen                                 Autogenerates OpenAPI Client/Server code 
+  format                                          Formats output 
+  test:setup_db                                   Setup Test DB
   "
 }
 
@@ -24,6 +25,7 @@ case "$1" in
     source .env.local
     set +o allexport
     ;;
+
   "--env=production")
     echo 'Using production ENV'
     ;;
@@ -45,12 +47,31 @@ case "$1" in
     echo 'Finished formatting all code';
     exit 0
     ;;
-  "migration:create")
-    echo 'Creating migrations in db/migrations'
-    migrate create -ext sql -dir db/migrations "$3"
-    echo 'Finished creating migrations';
+
+  "test:setup_db")
+    echo 'Using local .env.test as ENV'
+    set -o allexport
+    source .env.test
+    set +o allexport
+
+    echo 'Creating test docker database';
+    docker-compose exec db psql -U postgres -c "DROP DATABASE IF EXISTS ${DATABASE_NAME}"
+    docker-compose exec db psql -U postgres -c "CREATE DATABASE ${DATABASE_NAME}"
+
+    migrate -source file://db/migrations/ -database "$DATABASE_URL" up
+    echo 'Finished running migrations';
     exit 0
     ;;
+
+  "format")
+    echo 'Formatting all code';
+    go fmt ./...
+    goimports -w .
+    golines -w .
+    echo 'Finished formatting all code';
+    exit 0
+    ;;
+
   *)
     echo 'Please provide an env with `./commands.sh --env={env} {command}`'
     cli_help
