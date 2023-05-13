@@ -16,7 +16,7 @@ var User = newUserTable("public", "user", "")
 type userTable struct {
 	postgres.Table
 
-	//Columns
+	// Columns
 	ID        postgres.ColumnInteger
 	Name      postgres.ColumnString
 	Email     postgres.ColumnString

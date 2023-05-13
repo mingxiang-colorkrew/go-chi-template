@@ -37,3 +37,11 @@ func (h *Handler) GetApiV1TenantTenantId(
 	resp, err := v1.TenantDetailAppService(h.app, request)
 	return resp, err
 }
+
+func (h *Handler) PatchApiV1TenantTenantId(
+	ctx context.Context,
+	request oapi.PatchApiV1TenantTenantIdRequestObject,
+) (oapi.PatchApiV1TenantTenantIdResponseObject, error) {
+	resp, err := v1.TenantUpdateAppService(h.app, request)
+	return resp, err
+}

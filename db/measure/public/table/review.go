@@ -16,7 +16,7 @@ var Review = newReviewTable("public", "review", "")
 type reviewTable struct {
 	postgres.Table
 
-	//Columns
+	// Columns
 	ID        postgres.ColumnInteger
 	Rating    postgres.ColumnInteger
 	Content   postgres.ColumnString

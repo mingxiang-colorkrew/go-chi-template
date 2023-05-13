@@ -25,15 +25,14 @@ func (c *fakeHttpClient) Do(r *http.Request) (*http.Response, error) {
 }
 
 func SetupTestApp() *config.App {
-	app := config.NewApp(config.AppEnvTest)
-	app.MigrateDbForTest()
-	h := handler.NewHandler(app)
-	app.SetupRouter(h)
+	a := config.NewApp()
+	h := handler.NewHandler(a)
+	ws := config.NewWebserver(a, h)
+
 	return app
 }
 
 func SetupClient(app *config.App) *oapi.ClientWithResponses {
-	server := app.MockServerForTest()
 	fakeClient := fakeHttpClient{
 		server: server,
 	}

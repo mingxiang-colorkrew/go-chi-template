@@ -14,5 +14,5 @@ func NewDbProvider(dbUrl string) *sql.DB {
 		log.Fatal("Unable to connect to database")
 	}
 
-  return db
+	return db
 }

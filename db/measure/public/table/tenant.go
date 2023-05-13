@@ -16,7 +16,7 @@ var Tenant = newTenantTable("public", "tenant", "")
 type tenantTable struct {
 	postgres.Table
 
-	//Columns
+	// Columns
 	ID        postgres.ColumnInteger
 	Name      postgres.ColumnString
 	ShortCode postgres.ColumnString

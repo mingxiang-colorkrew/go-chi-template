@@ -231,6 +231,32 @@ paths:
       required: true
       schema:
         type: string
+    patch:
+      operationId: patch-api-v1-tenant-tenantId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                tenantId:
+                  type: string
+              required:
+              - name
+              - tenantId
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  tenant:
+                    $ref: '#/components/schemas/Tenant'
+                type: object
+          description: OK
+      summary: ''
   /api/v1/user:
     get:
       description: List all users for a tenant
@@ -358,4 +384,3 @@ paths:
         type: string
 servers:
 - url: http://localhost:3000
-
