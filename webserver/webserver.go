@@ -5,14 +5,13 @@ import (
 	"log"
 	"measure/config"
 	"measure/oapi"
-	"measure/webserver/middleware"
 	"measure/webserver/handler"
+	"measure/webserver/middleware"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth"
 )
-
 
 type Webserver struct {
 	router     *chi.Mux
@@ -23,7 +22,6 @@ type Webserver struct {
 func (ws *Webserver) Router() *chi.Mux {
 	return ws.router
 }
-
 
 func NewWebserver(app *config.App) *Webserver {
 	handler := handler.NewHandler(app)

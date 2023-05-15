@@ -54,10 +54,10 @@ func SetupTestClient(app *config.App) *oapi.ClientWithResponses {
 }
 
 func SetupAuthHeaders(app *config.App) oapi.RequestEditorFn {
-	return func (ctx context.Context, req *http.Request) error {
+	return func(ctx context.Context, req *http.Request) error {
 		// TODO: hardcoded user ID, can setup seed user ID beforehand
 		_, tokenStr, _ := app.JWTAuth().Encode(map[string]interface{}{"user_id": 123})
-		req.Header.Add("Authorization", "Bearer " + tokenStr)
+		req.Header.Add("Authorization", "Bearer "+tokenStr)
 
 		return nil
 	}
