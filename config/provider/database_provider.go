@@ -19,7 +19,7 @@ func NewDbProvider(env *EnvProvider) *sql.DB {
 }
 
 func NewTestDbProvider(env *EnvProvider) *sql.DB {
-	txdb.Register("txdb", "postgresql", env.databaseUrl)
+	txdb.Register("txdb", "postgres", env.databaseUrl)
 	db, error := sql.Open("txdb", "TestTransactionDB")
 
 	if error != nil {

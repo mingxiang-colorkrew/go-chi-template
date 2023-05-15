@@ -110,12 +110,18 @@ case "${1}" in
   "migration:run")
     # run migrations for local db
     echo 'Running migrations from db/migrations';
-    echo 'Migrating DB';
+
+    echo '------------------------------------------------------------'
+    echo 'Migrating local DB';
     use_env "local"
     migrate -source file://db/migrations/ -database "$DATABASE_URL" up
 
+    echo '------------------------------------------------------------'
+
     echo 'Autogenerating DB models';
     jet -dsn="$DATABASE_URL" -schema=public -path=./db
+
+    echo '------------------------------------------------------------'
 
     echo 'Migrating test DB';
     use_env "test"

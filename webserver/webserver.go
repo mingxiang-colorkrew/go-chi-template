@@ -20,6 +20,10 @@ type Webserver struct {
 	app        *config.App
 }
 
+func (ws *Webserver) Router() *chi.Mux {
+	return ws.router
+}
+
 
 func NewWebserver(app *config.App) *Webserver {
 	handler := handler.NewHandler(app)

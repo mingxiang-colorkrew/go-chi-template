@@ -1,13 +1,14 @@
 package test
 
 import (
+	"context"
 	"log"
 	"measure/config"
 	"measure/oapi"
 	"measure/webserver"
-	"measure/webserver/handler"
 	"net/http"
 	"net/http/httptest"
+	"testing"
 )
 
 // mock HttpClient to work against generated openapi client
@@ -25,23 +26,22 @@ func (c *fakeHttpClient) Do(r *http.Request) (*http.Response, error) {
 	return rr.Result(), nil
 }
 
-func SetupTestApp() *config.App {
+func SetupTestApp(t *testing.T) *config.App {
 	app := config.NewApp()
 	app.UseTestDB()
+
+	t.Cleanup(func() {
+		app.DB().Close()
+	})
 
 	return app
 }
 
-func SetupClient(app *config.App) *oapi.ClientWithResponses {
+func SetupTestClient(app *config.App) *oapi.ClientWithResponses {
 	ws := webserver.NewWebserver(app)
 
-	s := &http.Server{
-		Handler: ws.router,
-		Addr:    ws.serverAddr,
-	}
-
 	fakeClient := fakeHttpClient{
-		server: ws,
+		server: ws.Router(),
 	}
 
 	client, err := oapi.NewClientWithResponses("", oapi.WithHTTPClient(&fakeClient))
@@ -51,4 +51,14 @@ func SetupClient(app *config.App) *oapi.ClientWithResponses {
 	}
 
 	return client
+}
+
+func SetupAuthHeaders(app *config.App) oapi.RequestEditorFn {
+	return func (ctx context.Context, req *http.Request) error {
+		// TODO: hardcoded user ID, can setup seed user ID beforehand
+		_, tokenStr, _ := app.JWTAuth().Encode(map[string]interface{}{"user_id": 123})
+		req.Header.Add("Authorization", "Bearer " + tokenStr)
+
+		return nil
+	}
 }
