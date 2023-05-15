@@ -13,11 +13,13 @@ import (
 	"github.com/go-chi/jwtauth"
 )
 
+
 type Webserver struct {
 	router     *chi.Mux
 	serverAddr string
 	app        *config.App
 }
+
 
 func NewWebserver(app *config.App) *Webserver {
 	handler := handler.NewHandler(app)

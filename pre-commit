@@ -1,0 +1,19 @@
+#!/bin/bash
+
+WORK_DIR="${PWD}"
+
+goFiles=$(git diff --staged --name-only --diff-filter=ACM -- "**/*.go" | cut -d'/' -f2-);
+
+if ! test -z "$goFiles" 
+then
+    # run formatting scripts on staged files (refer to commands.sh)
+    go fmt $goFiles
+    goimports -w $goFiles
+    golines -w $goFiles
+
+    # add the staged files
+    git add $goFiles
+fi
+
+
+

@@ -39,6 +39,10 @@ func (app *App) setRootDir() {
 	app.rootDir = path.Join(path.Dir(b), "..")
 }
 
+func (app *App) UseTestDB() {
+	app.db = provider.NewTestDbProvider(app.env)
+}
+
 func NewApp() *App {
 	app := App{}
 

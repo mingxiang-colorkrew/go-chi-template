@@ -4,6 +4,7 @@ import (
 	"log"
 	"measure/config"
 	"measure/oapi"
+	"measure/webserver"
 	"measure/webserver/handler"
 	"net/http"
 	"net/http/httptest"
@@ -25,16 +26,22 @@ func (c *fakeHttpClient) Do(r *http.Request) (*http.Response, error) {
 }
 
 func SetupTestApp() *config.App {
-	a := config.NewApp()
-	h := handler.NewHandler(a)
-	ws := config.NewWebserver(a, h)
+	app := config.NewApp()
+	app.UseTestDB()
 
 	return app
 }
 
 func SetupClient(app *config.App) *oapi.ClientWithResponses {
+	ws := webserver.NewWebserver(app)
+
+	s := &http.Server{
+		Handler: ws.router,
+		Addr:    ws.serverAddr,
+	}
+
 	fakeClient := fakeHttpClient{
-		server: server,
+		server: ws,
 	}
 
 	client, err := oapi.NewClientWithResponses("", oapi.WithHTTPClient(&fakeClient))
@@ -42,5 +49,6 @@ func SetupClient(app *config.App) *oapi.ClientWithResponses {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	return client
 }
