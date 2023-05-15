@@ -6,6 +6,7 @@ import (
 	"path"
 	"runtime"
 
+	"github.com/go-chi/jwtauth"
 	"go.uber.org/zap"
 )
 
@@ -14,6 +15,7 @@ type App struct {
 	db      *sql.DB
 	rootDir string
 	logger  *zap.Logger
+	jwtAuth *jwtauth.JWTAuth
 }
 
 func (app *App) EnvVars() *provider.EnvProvider {
@@ -28,6 +30,10 @@ func (app *App) Logger() *zap.Logger {
 	return app.logger
 }
 
+func (app *App) JWTAuth() *jwtauth.JWTAuth {
+	return app.jwtAuth
+}
+
 func (app *App) setRootDir() {
 	_, b, _, _ := runtime.Caller(0)
 	app.rootDir = path.Join(path.Dir(b), "..")
@@ -38,8 +44,9 @@ func NewApp() *App {
 
 	app.setRootDir()
 	app.env = provider.NewEnvProvider(app.rootDir)
-	app.db = provider.NewDbProvider(app.env.DatabaseUrl())
-	app.logger = provider.NewLoggerProvider()
+	app.db = provider.NewDbProvider(app.env)
+	app.logger = provider.NewLoggerProvider(app.env)
+	app.jwtAuth = provider.NewJWTAuth(app.env)
 
 	provider.NewValidationProvider()
 

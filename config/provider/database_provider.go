@@ -7,8 +7,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func NewDbProvider(dbUrl string) *sql.DB {
-	db, error := sql.Open("postgres", dbUrl)
+func NewDbProvider(env *EnvProvider) *sql.DB {
+	db, error := sql.Open("postgres", env.databaseUrl)
 
 	if error != nil {
 		log.Fatal("Unable to connect to database")

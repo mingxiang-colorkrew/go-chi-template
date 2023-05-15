@@ -2,7 +2,7 @@ package main
 
 import (
 	"measure/config"
-	"measure/webserver/handler"
+	"measure/webserver"
 	"os"
 )
 
@@ -13,8 +13,7 @@ func main() {
 	}
 
 	a := config.NewApp()
-	h := handler.NewHandler(a)
-	ws := config.NewWebserver(a, h)
+	ws := webserver.NewWebserver(a)
 
 	if command == "routes:list" {
 		ws.PrintRoutes()

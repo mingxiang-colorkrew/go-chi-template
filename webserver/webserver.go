@@ -1,50 +1,32 @@
-package config
+package webserver
 
 import (
 	"fmt"
 	"log"
+	"measure/config"
 	"measure/oapi"
+	"measure/webserver/middleware"
+	"measure/webserver/handler"
 	"net/http"
-	"time"
 
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
+	"github.com/go-chi/jwtauth"
 )
 
 type Webserver struct {
 	router     *chi.Mux
 	serverAddr string
-	app        *App
+	app        *config.App
 }
 
-func setupLoggerMiddleware(l *zap.Logger) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		fn := func(w http.ResponseWriter, r *http.Request) {
-			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
-			t1 := time.Now()
-			defer func() {
-				reqLogger := l.With(
-					zap.String("proto", r.Proto),
-					zap.String("path", r.URL.Path),
-					zap.String("reqId", middleware.GetReqID(r.Context())),
-					zap.Duration("lat", time.Since(t1)),
-					zap.Int("status", ww.Status()),
-					zap.Int("size", ww.BytesWritten()),
-				)
-				reqLogger.Info("Served")
-			}()
-			next.ServeHTTP(ww, r)
-		}
-		return http.HandlerFunc(fn)
-	}
-}
-
-func NewWebserver(app *App, handler oapi.StrictServerInterface) *Webserver {
+func NewWebserver(app *config.App) *Webserver {
+	handler := handler.NewHandler(app)
 	serverAddr := ":" + app.EnvVars().ServerPort()
 
 	r := chi.NewRouter()
-	r.Use(setupLoggerMiddleware(app.Logger()))
+	r.Use(middleware.NewLoggerMiddleware(app.Logger()))
+	r.Use(jwtauth.Verifier(app.JWTAuth()))
+	r.Use(middleware.NewAuthMiddleware(app))
 
 	baseUrl := ""
 	strictHandler := oapi.NewStrictHandler(handler, []oapi.StrictMiddlewareFunc{})

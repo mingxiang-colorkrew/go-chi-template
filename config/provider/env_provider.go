@@ -6,6 +6,8 @@ type EnvProvider struct {
 	appEnv      string
 	serverPort  string
 	databaseUrl string
+	jwtSecret   string
+	logLevel    string
 }
 
 func (e *EnvProvider) AppEnv() string {
@@ -14,10 +16,6 @@ func (e *EnvProvider) AppEnv() string {
 
 func (e *EnvProvider) ServerPort() string {
 	return e.serverPort
-}
-
-func (e *EnvProvider) DatabaseUrl() string {
-	return e.databaseUrl
 }
 
 func NewEnvProvider(rootDir string) *EnvProvider {
@@ -32,11 +30,15 @@ func NewEnvProvider(rootDir string) *EnvProvider {
 	}
 
 	databaseUrl, exists := os.LookupEnv("DATABASE_URL")
+	jwtSecret, exists := os.LookupEnv("JWT_SECRET")
+	logLevel, exists := os.LookupEnv("LOG_LEVEL")
 
 	envProvider := EnvProvider{
 		appEnv:      appServer,
 		serverPort:  serverPort,
 		databaseUrl: databaseUrl,
+		jwtSecret:   jwtSecret,
+		logLevel:    logLevel,
 	}
 
 	return &envProvider
