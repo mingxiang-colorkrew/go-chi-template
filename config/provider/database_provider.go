@@ -3,6 +3,7 @@ package provider
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	"github.com/DATA-DOG/go-txdb"
 	_ "github.com/lib/pq"
@@ -18,8 +19,12 @@ func NewDbProvider(env *EnvProvider) *sql.DB {
 	return db
 }
 
+func RegisterTestTxDb() {
+	databaseUrl := os.Getenv("DATABASE_URL")
+	txdb.Register("txdb", "postgres", databaseUrl)
+}
+
 func NewTestDbProvider(env *EnvProvider) *sql.DB {
-	txdb.Register("txdb", "postgres", env.databaseUrl)
 	db, error := sql.Open("txdb", "TestTransactionDB")
 
 	if error != nil {

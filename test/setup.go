@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"measure/config"
+	"measure/config/provider"
 	"measure/oapi"
 	"measure/webserver"
 	"net/http"
@@ -26,13 +27,14 @@ func (c *fakeHttpClient) Do(r *http.Request) (*http.Response, error) {
 	return rr.Result(), nil
 }
 
+func init() {
+	// TODO: figure out if there is an elegant way to initalize txn DB without going through app
+	provider.RegisterTestTxDb()
+}
+
 func SetupTestApp(t *testing.T) *config.App {
 	app := config.NewApp()
 	app.UseTestDB()
-
-	t.Cleanup(func() {
-		app.DB().Close()
-	})
 
 	return app
 }

@@ -60,7 +60,9 @@ case "${1}" in
     go install github.com/josharian/impl@latest
     go install golang.org/x/tools/cmd/goimports@latest
     go install golang.org/x/tools/gopls@latest
-    echo 'All tolls installed successfully'
+    go install golang.org/x/tools/cmd/cover@latest
+    echo 'All tools installed successfully'
+
     exit 0
     ;;
 
@@ -140,6 +142,11 @@ case "${1}" in
     exit 0
     ;;
 
+  "test")
+    use_env "test"
+    go test ./test/...
+    ;;
+    
   *)
     echo 'ERROR: No command provided'
     cli_help
