@@ -2,7 +2,7 @@
 
 WORK_DIR="${PWD}"
 
-goFiles=$(git diff --staged --name-only --diff-filter=ACM -- "**/*.go" | cut -d'/' -f2-);
+goFiles=$(git diff --staged --name-only --diff-filter=ACM -- "**/*.go");
 
 if ! test -z "$goFiles" 
 then
