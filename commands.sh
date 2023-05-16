@@ -122,6 +122,7 @@ case "${1}" in
 
     echo 'Autogenerating DB models';
     jet -dsn="$DATABASE_URL" -schema=public -path=./db
+    bash ./commands.sh format
 
     echo '------------------------------------------------------------'
 

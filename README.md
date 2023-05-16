@@ -15,9 +15,9 @@ Ensure you have the following software installed beforehand
 
 Run the follow commands to set up the project
 ```bash
-./commands.sh dev_packages:install
-./commands.sh init:db
+# this command will run dev_packages:install so we don't need to do it explicitly
 ./commands.sh hooks:install
+./commands.sh init:db
 ./commands.sh migration:run
 go mod download
 
