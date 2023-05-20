@@ -3,3 +3,5 @@ tmp
 .swp
 __debug_bin
 coverage.out
+bin
+.DS_Store

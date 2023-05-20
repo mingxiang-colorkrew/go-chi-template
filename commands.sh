@@ -1,5 +1,9 @@
 #!/bin/bash
 #
+show_divider() {
+    echo '------------------------------------------------------------'
+}
+
 use_env() {
     echo "Using .env.${1} as ENV"
     set -o allexport
@@ -24,6 +28,11 @@ cli_help() {
   hooks:install                         Install git hooks to format code on commit
   "
 }
+
+export GOBIN="${PWD}/bin"
+echo "Setting \$GOBIN=${GOBIN}"
+echo "If running tools outside this script, use './bin/{executable}'"
+show_divider
 
 case "${1}" in
   "help")
@@ -53,14 +62,23 @@ case "${1}" in
 
   "dev_packages:install")
     echo 'Installing tools for local development'
-    go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-    go install -v github.com/go-delve/delve/cmd/dlv@latest
-    go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
-    go install github.com/go-jet/jet/v2/cmd/jet@latest
-    go install github.com/josharian/impl@latest
-    go install golang.org/x/tools/cmd/goimports@latest
-    go install golang.org/x/tools/gopls@latest
+    mkdir -p bin
+    go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.2
+    go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4
+    go install github.com/go-jet/jet/v2/cmd/jet@v2.10.0
+    go install github.com/josharian/impl@v1.2.0
+
+    # code coverage
     go install golang.org/x/tools/cmd/cover@latest
+
+    # formatting
+    go install golang.org/x/tools/cmd/goimports@latest
+    go install github.com/segmentio/golines@v0.11.0
+
+    # debugger
+    go install -v github.com/go-delve/delve/cmd/dlv@latest
+    # language server
+    go install golang.org/x/tools/gopls@latest
     echo 'All tools installed successfully'
 
     exit 0
@@ -113,18 +131,18 @@ case "${1}" in
     # run migrations for local db
     echo 'Running migrations from db/migrations';
 
-    echo '------------------------------------------------------------'
+    show_divider
     echo 'Migrating local DB';
     use_env "local"
     migrate -source file://db/migrations/ -database "$DATABASE_URL" up
 
-    echo '------------------------------------------------------------'
+    show_divider
 
     echo 'Autogenerating DB models';
     jet -dsn="$DATABASE_URL" -schema=public -path=./db
     bash ./commands.sh format
 
-    echo '------------------------------------------------------------'
+    show_divider
 
     echo 'Migrating test DB';
     use_env "test"
@@ -134,8 +152,6 @@ case "${1}" in
     ;;
 
   "hooks:install")
-    # install PHP and npm packages locally so we can run formatting outside docker
-    bash ./commands.sh dev_packages:install
     # copy git hook to hooks directory
     cp ./pre-commit ./.git/hooks/pre-commit
     chmod +x .git/hooks/pre-commit
