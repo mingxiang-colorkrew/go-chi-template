@@ -1,6 +1,7 @@
 package shared
 
 import (
+	"context"
 	"encoding/json"
 	"go_chi_template/config"
 	"go_chi_template/oapi"
@@ -11,6 +12,7 @@ import (
 )
 
 func ValidateTenantCreateAppService(
+	ctx context.Context,
 	app *config.App,
 	payload *oapi.PostApiV1TenantJSONRequestBody,
 ) (*oapi.PostApiV1Tenant400JSONResponse, error) {

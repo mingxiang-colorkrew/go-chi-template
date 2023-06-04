@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"go_chi_template/config"
 	"go_chi_template/oapi"
 	domainservice "go_chi_template/src/domain_service"
@@ -10,6 +11,7 @@ import (
 )
 
 func UserCreateAppService(
+	ctx context.Context,
 	app *config.App,
 	req oapi.PostApiV1UserRequestObject,
 ) (oapi.PostApiV1UserResponseObject, error) {

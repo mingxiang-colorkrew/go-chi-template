@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"go_chi_template/config"
 	"go_chi_template/oapi"
@@ -11,6 +12,7 @@ import (
 )
 
 func TenantCreateAppService(
+	ctx context.Context,
 	app *config.App,
 	req oapi.PostApiV1TenantRequestObject,
 ) (oapi.PostApiV1TenantResponseObject, error) {

@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"go_chi_template/config"
 	"go_chi_template/oapi"
 	"go_chi_template/src/repository/multi"
@@ -8,6 +9,7 @@ import (
 )
 
 func UserDetailAppService(
+	ctx context.Context,
 	app *config.App,
 	req oapi.GetApiV1UserUserIdRequestObject,
 ) (oapi.GetApiV1UserUserIdResponseObject, error) {

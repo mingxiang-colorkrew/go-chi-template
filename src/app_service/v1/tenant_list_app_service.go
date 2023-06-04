@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"go_chi_template/config"
 	"go_chi_template/oapi"
 	"go_chi_template/src/repository/multi"
@@ -8,6 +9,7 @@ import (
 )
 
 func TenantListAppService(
+	ctx context.Context,
 	app *config.App,
 	_ oapi.GetApiV1TenantRequestObject,
 ) (oapi.GetApiV1TenantResponseObject, error) {
