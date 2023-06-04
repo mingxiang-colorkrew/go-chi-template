@@ -3,11 +3,13 @@ package provider
 import "os"
 
 type EnvProvider struct {
-	appEnv      string
-	serverPort  string
-	databaseUrl string
-	jwtSecret   string
-	logLevel    string
+	appEnv        string
+	serverPort    string
+	databaseUrl   string
+	redisUrl      string
+	redisPassword string
+	jwtSecret     string
+	logLevel      string
 }
 
 func (e *EnvProvider) AppEnv() string {
@@ -30,15 +32,19 @@ func NewEnvProvider(rootDir string) *EnvProvider {
 	}
 
 	databaseUrl, exists := os.LookupEnv("DATABASE_URL")
+	redisUrl, exists := os.LookupEnv("REDIS_URL")
+	redisPassword, exists := os.LookupEnv("REDIS_PASSWORD")
 	jwtSecret, exists := os.LookupEnv("JWT_SECRET")
 	logLevel, exists := os.LookupEnv("LOG_LEVEL")
 
 	envProvider := EnvProvider{
-		appEnv:      appServer,
-		serverPort:  serverPort,
-		databaseUrl: databaseUrl,
-		jwtSecret:   jwtSecret,
-		logLevel:    logLevel,
+		appEnv:        appServer,
+		serverPort:    serverPort,
+		databaseUrl:   databaseUrl,
+		redisUrl:      redisUrl,
+		redisPassword: redisPassword,
+		jwtSecret:     jwtSecret,
+		logLevel:      logLevel,
 	}
 
 	return &envProvider

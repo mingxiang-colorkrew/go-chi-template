@@ -7,12 +7,14 @@ import (
 	"runtime"
 
 	"github.com/go-chi/jwtauth"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
 type App struct {
 	env     *provider.EnvProvider
 	db      *sql.DB
+	redis   *redis.Client
 	rootDir string
 	logger  *zap.Logger
 	jwtAuth *jwtauth.JWTAuth
@@ -24,6 +26,10 @@ func (app *App) EnvVars() *provider.EnvProvider {
 
 func (app *App) DB() *sql.DB {
 	return app.db
+}
+
+func (app *App) Redis() *redis.Client {
+	return app.redis
 }
 
 func (app *App) Logger() *zap.Logger {
@@ -49,6 +55,7 @@ func NewApp() *App {
 	app.setRootDir()
 	app.env = provider.NewEnvProvider(app.rootDir)
 	app.db = provider.NewDbProvider(app.env)
+	app.redis = provider.NewRedisProvider(app.env)
 	app.logger = provider.NewLoggerProvider(app.env)
 	app.jwtAuth = provider.NewJWTAuth(app.env)
 
