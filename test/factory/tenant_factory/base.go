@@ -1,9 +1,9 @@
 package tenantfactory
 
 import (
-	"measure/config"
-	"measure/db/measure/public/model"
-	"measure/src/mutation"
+	"go_chi_template/config"
+	"go_chi_template/db/go_chi_template/public/model"
+	"go_chi_template/src/mutation"
 )
 
 func SeedTenant(app *config.App, opts ...TenantOption) (*model.Tenant, error) {

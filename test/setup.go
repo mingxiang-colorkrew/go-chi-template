@@ -2,11 +2,11 @@ package test
 
 import (
 	"context"
+	"go_chi_template/config"
+	"go_chi_template/config/provider"
+	"go_chi_template/oapi"
+	"go_chi_template/webserver"
 	"log"
-	"measure/config"
-	"measure/config/provider"
-	"measure/oapi"
-	"measure/webserver"
 	"net/http"
 	"net/http/httptest"
 	"testing"

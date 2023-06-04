@@ -2,9 +2,9 @@ package handler
 
 import (
 	"context"
-	"measure/oapi"
-	"measure/src/app_service/shared"
-	v1 "measure/src/app_service/v1"
+	"go_chi_template/oapi"
+	"go_chi_template/src/app_service/shared"
+	v1 "go_chi_template/src/app_service/v1"
 )
 
 func (h *Handler) PostApiV1User(

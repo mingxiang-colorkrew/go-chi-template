@@ -2,10 +2,10 @@ package v1
 
 import (
 	"fmt"
-	"measure/config"
-	"measure/oapi"
-	domainservice "measure/src/domain_service"
-	"measure/src/mutation"
+	"go_chi_template/config"
+	"go_chi_template/oapi"
+	domainservice "go_chi_template/src/domain_service"
+	"go_chi_template/src/mutation"
 
 	"go.uber.org/zap"
 )

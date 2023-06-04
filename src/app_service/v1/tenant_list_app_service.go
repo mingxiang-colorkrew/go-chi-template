@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"measure/config"
-	"measure/oapi"
-	"measure/src/repository/multi"
+	"go_chi_template/config"
+	"go_chi_template/oapi"
+	"go_chi_template/src/repository/multi"
 	"strconv"
 )
 

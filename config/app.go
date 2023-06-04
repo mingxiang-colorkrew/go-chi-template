@@ -2,7 +2,7 @@ package config
 
 import (
 	"database/sql"
-	"measure/config/provider"
+	"go_chi_template/config/provider"
 	"path"
 	"runtime"
 

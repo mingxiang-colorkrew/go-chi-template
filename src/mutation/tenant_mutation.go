@@ -1,9 +1,9 @@
 package mutation
 
 import (
-	"measure/config"
-	"measure/db/measure/public/model"
-	"measure/db/measure/public/table"
+	"go_chi_template/config"
+	"go_chi_template/db/go_chi_template/public/model"
+	"go_chi_template/db/go_chi_template/public/table"
 )
 
 func InsertTenant(app *config.App, tenant *model.Tenant) (*model.Tenant, error) {

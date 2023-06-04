@@ -1,9 +1,9 @@
 package multi
 
 import (
-	"measure/config"
-	"measure/db/measure/public/table"
-	"measure/src/dto"
+	"go_chi_template/config"
+	"go_chi_template/db/go_chi_template/public/table"
+	"go_chi_template/src/dto"
 
 	. "github.com/go-jet/jet/v2/postgres"
 )

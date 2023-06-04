@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"measure/oapi"
-	"measure/test"
-	tf "measure/test/factory/tenant_factory"
+	"go_chi_template/oapi"
+	"go_chi_template/test"
+	tf "go_chi_template/test/factory/tenant_factory"
 	"testing"
 )
 
@@ -23,7 +23,7 @@ func TestListTenant(t *testing.T) {
 
 	// assert against body
 	if res.StatusCode != 200 {
-		t.FailNow()
+		t.Fatal()
 	}
 
 	var respDto oapi.GetApiV1Tenant200JSONResponse
@@ -31,11 +31,11 @@ func TestListTenant(t *testing.T) {
 	res.Body.Close()
 
 	if len(respDto.Tenants) != 1 {
-		t.FailNow()
+		t.Fatal()
 	}
 
 	if respDto.Tenants[0].ShortCode != "aaay2" {
-		t.FailNow()
+		t.Fatal()
 	}
 }
 
@@ -66,6 +66,6 @@ func TestCreateTenant(t *testing.T) {
 	res.Body.Close()
 
 	if *respDto.Data.ShortCode.UniqueShortCode == "" {
-		t.FailNow()
+		t.Fatal()
 	}
 }

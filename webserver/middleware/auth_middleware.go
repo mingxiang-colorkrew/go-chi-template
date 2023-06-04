@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"measure/config"
+	"go_chi_template/config"
 	"net/http"
 
 	"github.com/go-chi/chi/middleware"

@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"measure/db/measure/public/model"
+	"go_chi_template/db/go_chi_template/public/model"
 )
 
 type TenantWithUserCountDto struct {

@@ -1,4 +1,4 @@
-module measure
+module go_chi_template
 
 go 1.20
 

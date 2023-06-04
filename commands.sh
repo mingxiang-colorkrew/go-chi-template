@@ -63,9 +63,17 @@ case "${1}" in
   "dev_packages:install")
     echo 'Installing tools for local development'
     mkdir -p bin
+
+    # CLI tool to run migrations against a DB
     go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.2
+
+    # parse OpenAPI specs and generate client and server code
     go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4
+
+    # read DB and autogenerate model structs
     go install github.com/go-jet/jet/v2/cmd/jet@v2.10.0
+
+    # generate method stubs
     go install github.com/josharian/impl@v1.2.0
 
     # code coverage
@@ -161,7 +169,8 @@ case "${1}" in
 
   "test")
     use_env "test"
-    go test ./test/...
+    go test --cover -covermode=count -coverpkg=./...  ./test/... -coverprofile=cover.out
+    go tool cover -html=cover.out
     ;;
     
   *)

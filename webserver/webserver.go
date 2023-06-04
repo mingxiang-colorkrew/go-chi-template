@@ -2,11 +2,11 @@ package webserver
 
 import (
 	"fmt"
+	"go_chi_template/config"
+	"go_chi_template/oapi"
+	"go_chi_template/webserver/handler"
+	"go_chi_template/webserver/middleware"
 	"log"
-	"measure/config"
-	"measure/oapi"
-	"measure/webserver/handler"
-	"measure/webserver/middleware"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"

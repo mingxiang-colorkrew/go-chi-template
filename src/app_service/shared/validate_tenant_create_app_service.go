@@ -2,10 +2,10 @@ package shared
 
 import (
 	"encoding/json"
-	"measure/config"
-	"measure/oapi"
-	"measure/src/enum"
-	"measure/src/repository/single"
+	"go_chi_template/config"
+	"go_chi_template/oapi"
+	"go_chi_template/src/enum"
+	"go_chi_template/src/repository/single"
 
 	"github.com/gookit/validate"
 )

@@ -1,9 +1,9 @@
 package single
 
 import (
-	"measure/config"
-	"measure/db/measure/public/model"
-	"measure/db/measure/public/table"
+	"go_chi_template/config"
+	"go_chi_template/db/go_chi_template/public/model"
+	"go_chi_template/db/go_chi_template/public/table"
 
 	. "github.com/go-jet/jet/v2/postgres"
 )

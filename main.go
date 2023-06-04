@@ -1,8 +1,8 @@
 package main
 
 import (
-	"measure/config"
-	"measure/webserver"
+	"go_chi_template/config"
+	"go_chi_template/webserver"
 	"os"
 )
 
