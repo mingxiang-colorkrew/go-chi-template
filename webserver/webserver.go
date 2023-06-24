@@ -10,7 +10,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth"
+	// "github.com/go-chi/jwtauth"
 )
 
 type Webserver struct {
@@ -29,8 +29,8 @@ func NewWebserver(app *config.App) *Webserver {
 
 	r := chi.NewRouter()
 	r.Use(middleware.NewLoggerMiddleware(app.Logger()))
-	r.Use(jwtauth.Verifier(app.JWTAuth()))
-	r.Use(middleware.NewAuthMiddleware(app))
+	// r.Use(jwtauth.Verifier(app.JWTAuth()))
+	// r.Use(middleware.NewAuthMiddleware(app))
 
 	baseUrl := ""
 	strictHandler := oapi.NewStrictHandler(handler, []oapi.StrictMiddlewareFunc{})

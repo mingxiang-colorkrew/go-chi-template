@@ -11,7 +11,7 @@ components:
         user:
           $ref: '#/components/schemas/User'
       required:
-      - id
+        - id
       title: Review
       type: object
     Tenant:
@@ -33,9 +33,9 @@ components:
         userCount:
           type: integer
       required:
-      - id
-      - name
-      - shortCode
+        - id
+        - name
+        - shortCode
       title: Tenant
       type: object
       x-examples:
@@ -86,7 +86,7 @@ components:
         tenant:
           $ref: '#/components/schemas/Tenant'
       required:
-      - id
+        - id
       title: User
       type: object
     UserCreateValidationError:
@@ -121,6 +121,35 @@ components:
           type: object
       title: UserCreateValidationError
       type: object
+    Department:
+      title: Department
+      x-stoplight:
+        id: nx70gznwo6i4t
+      type: object
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: zy7lmqwmg4rrs
+        custom_id:
+          type: string
+          x-stoplight:
+            id: 90z7up0m2uc51
+        name:
+          type: string
+          x-stoplight:
+            id: rqhd6cuwgskpq
+        hierarchy:
+          type: array
+          x-stoplight:
+            id: 05dv63n3yobt6
+          items:
+            $ref: '#/components/schemas/Department'
+      required:
+        - id
+        - custom_id
+        - name
+        - hierarchy
   securitySchemes: {}
 info:
   description: Test API
@@ -143,7 +172,7 @@ paths:
                       $ref: '#/components/schemas/Tenant'
                     type: array
                 required:
-                - tenants
+                  - tenants
                 type: object
           description: OK
       summary: ''
@@ -163,8 +192,8 @@ paths:
                   minLength: 4
                   type: string
               required:
-              - name
-              - shortCode
+                - name
+                - shortCode
               type: object
       responses:
         '200':
@@ -175,7 +204,7 @@ paths:
                   tenant:
                     $ref: '#/components/schemas/Tenant'
                 required:
-                - tenant
+                  - tenant
                 type: object
           description: OK
         '400':
@@ -190,13 +219,13 @@ paths:
                   errorMessage:
                     type: string
                 required:
-                - errorCode
-                - errorMessage
-                - data
+                  - errorCode
+                  - errorMessage
+                  - data
                 type: object
           description: Bad Request
       summary: ''
-  /api/v1/tenant/{tenantId}:
+  '/api/v1/tenant/{tenantId}':
     get:
       description: Get details for 1 tenant
       operationId: get-api-v1-tenant-tenantId
@@ -209,7 +238,7 @@ paths:
                   tenant:
                     $ref: '#/components/schemas/Tenant'
                 required:
-                - tenant
+                  - tenant
                 type: object
           description: OK
         '404':
@@ -220,17 +249,17 @@ paths:
                   message:
                     type: string
                 required:
-                - message
+                  - message
                 type: object
           description: Not Found
       summary: Get Tenant By ID
       tags: []
     parameters:
-    - in: path
-      name: tenantId
-      required: true
-      schema:
-        type: string
+      - in: path
+        name: tenantId
+        required: true
+        schema:
+          type: string
     patch:
       operationId: patch-api-v1-tenant-tenantId
       requestBody:
@@ -243,8 +272,8 @@ paths:
                 tenantId:
                   type: string
               required:
-              - name
-              - tenantId
+                - name
+                - tenantId
               type: object
       responses:
         '200':
@@ -269,7 +298,7 @@ paths:
                 tenantId:
                   type: string
               required:
-              - tenantId
+                - tenantId
               type: object
       responses:
         '200':
@@ -282,7 +311,7 @@ paths:
                       $ref: '#/components/schemas/User'
                     type: array
                 required:
-                - users
+                  - users
                 type: object
           description: OK
       summary: Get all users
@@ -302,17 +331,17 @@ paths:
                   type: string
                 role:
                   enum:
-                  - normal
-                  - admin
-                  - super
+                    - normal
+                    - admin
+                    - super
                   type: string
                 tenantId:
                   type: string
               required:
-              - email
-              - name
-              - role
-              - tenantId
+                - email
+                - name
+                - role
+                - tenantId
               type: object
       responses:
         '200':
@@ -324,7 +353,7 @@ paths:
                   user:
                     $ref: '#/components/schemas/User'
                 required:
-                - user
+                  - user
                 type: object
           description: OK
         '400':
@@ -339,13 +368,13 @@ paths:
                   errorMessage:
                     type: string
                 required:
-                - errorCode
-                - errorMessage
-                - data
+                  - errorCode
+                  - errorMessage
+                  - data
                 type: object
           description: Bad Request
       summary: ''
-  /api/v1/user/{userId}:
+  '/api/v1/user/{userId}':
     get:
       description: Gets a single user with their tenant
       operationId: get-api-v1-user-userId
@@ -360,7 +389,7 @@ paths:
                   user:
                     $ref: '#/components/schemas/User'
                 required:
-                - user
+                  - user
                 type: object
           description: OK
         '404':
@@ -371,16 +400,52 @@ paths:
                   message:
                     type: string
                 required:
-                - message
+                  - message
                 type: object
           description: Not Found
       summary: Get User By ID
       tags: []
     parameters:
-    - in: path
-      name: userId
-      required: true
-      schema:
-        type: string
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+  /api/v1/department:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  departments:
+                    type: array
+                    x-stoplight:
+                      id: cbdz9scvdyruq
+                    items:
+                      $ref: '#/components/schemas/Department'
+                required:
+                  - departments
+      operationId: get-api-v1-department
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+                  x-stoplight:
+                    id: y5xsk1nplcy9n
+                  nullable: true
+              required:
+                - search
 servers:
-- url: http://localhost:3000
+  - url: 'http://localhost:3000'
+

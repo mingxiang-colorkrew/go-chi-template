@@ -25,6 +25,14 @@ const (
 	Super  PostApiV1UserJSONBodyRole = "super"
 )
 
+// Department defines model for Department.
+type Department struct {
+	CustomId  string       `json:"custom_id"`
+	Hierarchy []Department `json:"hierarchy"`
+	Id        string       `json:"id"`
+	Name      string       `json:"name"`
+}
+
 // Tenant defines model for Tenant.
 type Tenant struct {
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
@@ -81,6 +89,11 @@ type UserCreateValidationError struct {
 	} `json:"tenantId,omitempty"`
 }
 
+// GetApiV1DepartmentJSONBody defines parameters for GetApiV1Department.
+type GetApiV1DepartmentJSONBody struct {
+	Search *string `json:"search"`
+}
+
 // PostApiV1TenantJSONBody defines parameters for PostApiV1Tenant.
 type PostApiV1TenantJSONBody struct {
 	Name      string `json:"name"`
@@ -108,6 +121,9 @@ type PostApiV1UserJSONBody struct {
 
 // PostApiV1UserJSONBodyRole defines parameters for PostApiV1User.
 type PostApiV1UserJSONBodyRole string
+
+// GetApiV1DepartmentJSONRequestBody defines body for GetApiV1Department for application/json ContentType.
+type GetApiV1DepartmentJSONRequestBody GetApiV1DepartmentJSONBody
 
 // PostApiV1TenantJSONRequestBody defines body for PostApiV1Tenant for application/json ContentType.
 type PostApiV1TenantJSONRequestBody PostApiV1TenantJSONBody
@@ -194,6 +210,11 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// GetApiV1Department request with any body
+	GetApiV1DepartmentWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	GetApiV1Department(ctx context.Context, body GetApiV1DepartmentJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiV1Tenant request
 	GetApiV1Tenant(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -222,6 +243,30 @@ type ClientInterface interface {
 
 	// GetApiV1UserUserId request with any body
 	GetApiV1UserUserIdWithBody(ctx context.Context, userId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) GetApiV1DepartmentWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1DepartmentRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetApiV1Department(ctx context.Context, body GetApiV1DepartmentJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1DepartmentRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) GetApiV1Tenant(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -354,6 +399,46 @@ func (c *Client) GetApiV1UserUserIdWithBody(ctx context.Context, userId string, 
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewGetApiV1DepartmentRequest calls the generic GetApiV1Department builder with application/json body
+func NewGetApiV1DepartmentRequest(server string, body GetApiV1DepartmentJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewGetApiV1DepartmentRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewGetApiV1DepartmentRequestWithBody generates requests for GetApiV1Department with any type of body
+func NewGetApiV1DepartmentRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/department")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
 }
 
 // NewGetApiV1TenantRequest generates requests for GetApiV1Tenant
@@ -663,6 +748,11 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// GetApiV1Department request with any body
+	GetApiV1DepartmentWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetApiV1DepartmentResponse, error)
+
+	GetApiV1DepartmentWithResponse(ctx context.Context, body GetApiV1DepartmentJSONRequestBody, reqEditors ...RequestEditorFn) (*GetApiV1DepartmentResponse, error)
+
 	// GetApiV1Tenant request
 	GetApiV1TenantWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1TenantResponse, error)
 
@@ -691,6 +781,30 @@ type ClientWithResponsesInterface interface {
 
 	// GetApiV1UserUserId request with any body
 	GetApiV1UserUserIdWithBodyWithResponse(ctx context.Context, userId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetApiV1UserUserIdResponse, error)
+}
+
+type GetApiV1DepartmentResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Departments []Department `json:"departments"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiV1DepartmentResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiV1DepartmentResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type GetApiV1TenantResponse struct {
@@ -877,6 +991,23 @@ func (r GetApiV1UserUserIdResponse) StatusCode() int {
 	return 0
 }
 
+// GetApiV1DepartmentWithBodyWithResponse request with arbitrary body returning *GetApiV1DepartmentResponse
+func (c *ClientWithResponses) GetApiV1DepartmentWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*GetApiV1DepartmentResponse, error) {
+	rsp, err := c.GetApiV1DepartmentWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiV1DepartmentResponse(rsp)
+}
+
+func (c *ClientWithResponses) GetApiV1DepartmentWithResponse(ctx context.Context, body GetApiV1DepartmentJSONRequestBody, reqEditors ...RequestEditorFn) (*GetApiV1DepartmentResponse, error) {
+	rsp, err := c.GetApiV1Department(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiV1DepartmentResponse(rsp)
+}
+
 // GetApiV1TenantWithResponse request returning *GetApiV1TenantResponse
 func (c *ClientWithResponses) GetApiV1TenantWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiV1TenantResponse, error) {
 	rsp, err := c.GetApiV1Tenant(ctx, reqEditors...)
@@ -970,6 +1101,34 @@ func (c *ClientWithResponses) GetApiV1UserUserIdWithBodyWithResponse(ctx context
 		return nil, err
 	}
 	return ParseGetApiV1UserUserIdResponse(rsp)
+}
+
+// ParseGetApiV1DepartmentResponse parses an HTTP response from a GetApiV1DepartmentWithResponse call
+func ParseGetApiV1DepartmentResponse(rsp *http.Response) (*GetApiV1DepartmentResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiV1DepartmentResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Departments []Department `json:"departments"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseGetApiV1TenantResponse parses an HTTP response from a GetApiV1TenantWithResponse call
@@ -1210,6 +1369,9 @@ func ParseGetApiV1UserUserIdResponse(rsp *http.Response) (*GetApiV1UserUserIdRes
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Your GET endpoint
+	// (GET /api/v1/department)
+	GetApiV1Department(w http.ResponseWriter, r *http.Request)
 
 	// (GET /api/v1/tenant)
 	GetApiV1Tenant(w http.ResponseWriter, r *http.Request)
@@ -1241,6 +1403,21 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// GetApiV1Department operation middleware
+func (siw *ServerInterfaceWrapper) GetApiV1Department(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiV1Department(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
 
 // GetApiV1Tenant operation middleware
 func (siw *ServerInterfaceWrapper) GetApiV1Tenant(w http.ResponseWriter, r *http.Request) {
@@ -1494,6 +1671,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/department", wrapper.GetApiV1Department)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/tenant", wrapper.GetApiV1Tenant)
 	})
 	r.Group(func(r chi.Router) {
@@ -1516,6 +1696,25 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 
 	return r
+}
+
+type GetApiV1DepartmentRequestObject struct {
+	Body *GetApiV1DepartmentJSONRequestBody
+}
+
+type GetApiV1DepartmentResponseObject interface {
+	VisitGetApiV1DepartmentResponse(w http.ResponseWriter) error
+}
+
+type GetApiV1Department200JSONResponse struct {
+	Departments []Department `json:"departments"`
+}
+
+func (response GetApiV1Department200JSONResponse) VisitGetApiV1DepartmentResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type GetApiV1TenantRequestObject struct {
@@ -1701,6 +1900,9 @@ func (response GetApiV1UserUserId404JSONResponse) VisitGetApiV1UserUserIdRespons
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// Your GET endpoint
+	// (GET /api/v1/department)
+	GetApiV1Department(ctx context.Context, request GetApiV1DepartmentRequestObject) (GetApiV1DepartmentResponseObject, error)
 
 	// (GET /api/v1/tenant)
 	GetApiV1Tenant(ctx context.Context, request GetApiV1TenantRequestObject) (GetApiV1TenantResponseObject, error)
@@ -1752,6 +1954,37 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// GetApiV1Department operation middleware
+func (sh *strictHandler) GetApiV1Department(w http.ResponseWriter, r *http.Request) {
+	var request GetApiV1DepartmentRequestObject
+
+	var body GetApiV1DepartmentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetApiV1Department(ctx, request.(GetApiV1DepartmentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetApiV1Department")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetApiV1DepartmentResponseObject); ok {
+		if err := validResponse.VisitGetApiV1DepartmentResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("Unexpected response type: %T", response))
+	}
 }
 
 // GetApiV1Tenant operation middleware
