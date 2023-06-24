@@ -22,12 +22,25 @@ func DepartmentListAppService(
 	deptDtos := []oapi.Department{}
 
 	for _, dept := range depts {
+		hierarchy := []oapi.Department{}
+
+		for _, ancestor := range dept.Ancestors {
+			ancestorDto := oapi.Department{
+				Id:        strconv.FormatInt(ancestor.ID, 10),
+				Name:      *ancestor.Name,
+				CustomId:  ancestor.CustomID,
+				Hierarchy: []oapi.Department{},
+			}
+			hierarchy = append(hierarchy, ancestorDto)
+		}
+
 		deptDto := oapi.Department{
 			Id:        strconv.FormatInt(dept.ID, 10),
 			Name:      *dept.Name,
 			CustomId:  dept.CustomID,
-			Hierarchy: []oapi.Department{},
+			Hierarchy: hierarchy,
 		}
+
 		deptDtos = append(deptDtos, deptDto)
 	}
 
